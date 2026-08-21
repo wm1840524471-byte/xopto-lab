@@ -2673,3 +2673,123 @@ small{font-size:11px;color:var(--text2)}
     font-family: var(--font-mono);
 }
 
+/* ==================== 本地与跨设备存读档管理器 UI ==================== */
+.modal-save-box {
+    max-width: 480px;
+    width: 95%;
+}
+
+.save-tip-banner {
+    background: rgba(56, 189, 248, 0.08);
+    border: 1px dashed rgba(56, 189, 248, 0.35);
+    border-radius: 10px;
+    padding: 10px 12px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.save-section-card {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 12px;
+}
+
+.ssc-title {
+    font-size: 12px;
+    font-weight: 800;
+    color: #f8fafc;
+    margin-bottom: 10px;
+}
+
+.ssc-actions-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.btn-save-act {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+    text-align: center;
+    width: 100%;
+}
+
+.btn-copy-code {
+    background: linear-gradient(135deg, #0284c7, #2563eb);
+    color: #fff;
+    box-shadow: 0 2px 10px rgba(37, 99, 235, 0.3);
+}
+
+.btn-copy-code:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.5);
+}
+
+.btn-export-file {
+    background: rgba(30, 41, 59, 0.9);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.4);
+}
+
+.btn-export-file:hover {
+    background: rgba(56, 189, 248, 0.15);
+    border-color: #38bdf8;
+}
+
+.save-import-textarea {
+    width: 100%;
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    padding: 8px 10px;
+    color: #f8fafc;
+    font-size: 11px;
+    font-family: var(--font-mono);
+    resize: none;
+    margin-bottom: 8px;
+}
+
+.save-import-textarea:focus {
+    outline: none;
+    border-color: #34d399;
+    box-shadow: 0 0 10px rgba(52, 211, 153, 0.25);
+}
+
+.btn-import-code {
+    background: linear-gradient(135deg, #059669, #10b981);
+    color: #fff;
+    box-shadow: 0 2px 10px rgba(16, 185, 129, 0.3);
+}
+
+.btn-import-code:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.5);
+}
+
+.btn-upload-file {
+    background: rgba(30, 41, 59, 0.6);
+    color: #94a3b8;
+    border: 1px dashed rgba(255, 255, 255, 0.2);
+    font-weight: 700;
+}
+
+.btn-upload-file:hover {
+    color: #f8fafc;
+    border-color: #38bdf8;
+    background: rgba(56, 189, 248, 0.1);
+}
+
+

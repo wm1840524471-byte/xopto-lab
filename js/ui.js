@@ -1462,7 +1462,93 @@ class UIController {
             <div class="matrix-cats-container">
                 ${catBlocksHtml}
             </div>
-        `;
+    }
+
+    // ==================== 本地与跨设备存档管理 ====================
+    openSaveModal() {
+        if (window.soundEngine) window.soundEngine.playClick();
+        const input = document.getElementById('save-import-input');
+        if (input) input.value = '';
+        this.openModal('modal-save-manager');
+    }
+
+    copySaveCodeToClipboard() {
+        const e = window.gameEngine;
+        const code = e.exportSaveCode();
+        if (!code) {
+            this.toast('❌ 导出存档码失败');
+            return;
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(code).then(() => {
+                this.toast('📋 存档码已复制到剪贴板！可发微信备忘录备份！');
+            }).catch(() => {
+                this._fallbackCopy(code);
+            });
+        } else {
+            this._fallbackCopy(code);
+        }
+    }
+
+    _fallbackCopy(text) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        try {
+            document.execCommand('copy');
+            this.toast('📋 存档码已复制到剪贴板！可发微信备忘录备份！');
+        } catch (e) {
+            prompt('请手动长按复制下方存档码：', text);
+        }
+        document.body.removeChild(ta);
+    }
+
+    downloadSaveFile() {
+        const e = window.gameEngine;
+        const res = e.exportSaveJsonFile();
+        if (res.success) {
+            this.toast(`📁 存档文件【${res.filename}】已下载至本地！`);
+        } else {
+            this.toast('❌ 导出存档文件失败');
+        }
+    }
+
+    applyImportCode() {
+        const input = document.getElementById('save-import-input');
+        if (!input || !input.value.trim()) {
+            this.toast('⚠️ 请先粘贴你的存档码！');
+            return;
+        }
+        const code = input.value.trim();
+        const res = window.gameEngine.importSaveCode(code);
+        if (res.error) {
+            this.toast('❌ ' + res.error);
+        } else {
+            this.closeModal('modal-save-manager');
+            this.toast(`🎉 成功载入【${res.labName}】科研进度！`);
+        }
+    }
+
+    handleSaveFileUpload(event) {
+        const file = event.target.files && event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const content = e.target.result;
+                const res = window.gameEngine.importSaveCode(content);
+                if (res.error) {
+                    this.toast('❌ ' + res.error);
+                } else {
+                    this.closeModal('modal-save-manager');
+                    this.toast(`🎉 成功从文件载入【${res.labName}】科研进度！`);
+                }
+            } catch (err) {
+                this.toast('❌ 读取存档文件失败！');
+            }
+        };
+        reader.readAsText(file);
     }
 
     // ==================== 导师科研指导升级 ====================

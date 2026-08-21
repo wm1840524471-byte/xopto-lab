@@ -1971,6 +1971,75 @@ class GameEngine {
         this.rosterAvailable = GAME_DATA.labRosterPool.filter(n => !recruitedNames.includes(n));
     }
 
+    // ==================== 跨域/跨设备导出与导入存档码 / 文件 ====================
+    exportSaveCode() {
+        this.saveGame();
+        try {
+            const raw = localStorage.getItem(this.saveKey) || '{}';
+            const utf8Bytes = new TextEncoder().encode(raw);
+            let binary = '';
+            for (let b of utf8Bytes) binary += String.fromCharCode(b);
+            const b64 = btoa(binary);
+            return 'XOPTO_' + b64;
+        } catch (e) {
+            console.error('导出存档码失败', e);
+            return '';
+        }
+    }
+
+    importSaveCode(codeStr) {
+        if (!codeStr || typeof codeStr !== 'string') return { error: '请输入有效的存档码！' };
+        let clean = codeStr.trim();
+        if (clean.startsWith('XOPTO_')) clean = clean.slice(6);
+        try {
+            let jsonStr = '';
+            if (clean.startsWith('{')) {
+                jsonStr = clean;
+            } else {
+                const binary = atob(clean);
+                const bytes = new Uint8Array(binary.length);
+                for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+                jsonStr = new TextDecoder().decode(bytes);
+            }
+            const data = JSON.parse(jsonStr);
+            if (!data || typeof data !== 'object' || !data.labStage) {
+                return { error: '存档码数据已损坏或格式不正确！' };
+            }
+            localStorage.setItem(this.saveKey, JSON.stringify(data));
+            this.loadGame();
+            if (window.ui) {
+                window.ui.renderAll();
+                window.ui.toast('🎉 成功载入科研进度！');
+            }
+            return { success: true, labName: data.labName || '课题组' };
+        } catch (e) {
+            console.error('导入存档失败', e);
+            return { error: '解析存档码失败，请检查是否完整复制！' };
+        }
+    }
+
+    exportSaveJsonFile() {
+        this.saveGame();
+        try {
+            const raw = localStorage.getItem(this.saveKey) || '{}';
+            const dateStr = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+            const filename = `XOptoLab_Save_${dateStr}.json`;
+            const blob = new Blob([raw], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            return { success: true, filename };
+        } catch (e) {
+            console.error('导出存档文件失败', e);
+            return { error: '导出文件失败' };
+        }
+    }
+
     hardReset() {
         this._isResetting = true;
         this.hasStarted = false;
