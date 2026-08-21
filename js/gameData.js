@@ -102,19 +102,20 @@ const GAME_DATA = {
         { id: 7, title: '世纪巅峰', desc: '攻坚 Nature/Science 正刊', targetType: 'grand_theory', targetVal: 1, rewardFunding: 120.0, rewardPrestige: 180, rewardText: '世界顶尖工程中心！' },
     ],
 
-    // ==================== 50+ 同门花名册 (除博士生外，微调谐音一目了然) ====================
+    // ==================== 50+ 同门花名册 (全量深度谐音名) ====================
     labRosterPool: [
-        '艾铭','边贺','边紫枫','毕旭彤','成馨慧','褚仕文','耿英恺','郭卿','孔令羽',
-        '梁滔','梁政军','李晖','李经怀','李乐鑫','栗隆博','李萌亚','李沁','刘恺',
-        '刘恬念','刘清航','刘烁','刘恬媛','李云隆','罗畅乐','卢娅茹','马骏妍','苗梦然',
-        '宁维强','彭豪捷','蒲晓蕊','曲嘉音','宋敬豪','苏志纯','王昊','王嘉佳','王三森',
-        '王择文','文星婷','吴心悦','杨渊','闫嘉怡','姚鸽','宰永捷','赵萌淞','赵扬洁'
+        '艾鸣','边鹤','卞紫枫','毕续彤','程馨荟','初世文','耿鹰恺','郭青','孔翎羽',
+        '梁涛','梁正均','李辉','李精淮','李乐昕','历隆博','李盟雅','李清','刘凯',
+        '柳天年','刘擎航','刘铄','柳天缘','李云龙','罗长乐','芦雅如','马俊延','缪梦然',
+        '宁伟强','彭皓杰','浦晓睿','屈佳音','颂景豪','宿致纯','汪浩','汪家家','汪森森',
+        '汪泽文','温星婷','巫欣悦','杨元','严嘉宜','姚歌','翟永捷','赵蒙松','赵阳杰',
+        '小李','小王','小张','小陈','小刘','小杨','小赵','小孙','小周','小吴','研一萌新','科研小白'
     ],
 
     // ==================== 八大核心天骄博士 (严格学术门槛 + 签约津贴) ====================
     legendaryMembers: [
         {
-            id: 'chuweihong', name: '储微红', grade: '博士一年级', gradeYear: 1, avatar: '☕', tier: 'R+',
+            id: 'chuweihong', name: '初唯宏', grade: '博士一年级', gradeYear: 1, avatar: '☕', tier: 'R+',
             stageReq: 1, stipend: 10,
             unlockConditions: [
                 { type: 'lab_grade', grade: 2, desc: '评级升至 D 级（校级重点）' },
@@ -129,7 +130,7 @@ const GAME_DATA = {
             desc: '博一活力新星，自备手冲咖啡，是全组不可或缺的精力源泉。'
         },
         {
-            id: 'songkexin', name: '宋科新', grade: '直博一年级', gradeYear: 1, avatar: '🌟', tier: 'R+',
+            id: 'songkexin', name: '颂科新', grade: '直博一年级', gradeYear: 1, avatar: '🌟', tier: 'R+',
             stageReq: 2, stipend: 25,
             unlockConditions: [
                 { type: 'paper_count', count: 2, desc: '累计发表 2 篇论文' },
@@ -143,7 +144,7 @@ const GAME_DATA = {
             desc: '直博一年级新星。数理功底扎实，专心深耕前沿机制。'
         },
         {
-            id: 'linshuailing', name: '林率领', grade: '博士二年级', gradeYear: 2, avatar: '🥋', tier: 'SR',
+            id: 'linshuailing', name: '霖率领', grade: '博士二年级', gradeYear: 2, avatar: '🥋', tier: 'SR',
             stageReq: 2, stipend: 50,
             unlockConditions: [
                 { type: 'equip_level', eqId: 'glovebox_spin', level: 3, desc: '手套箱旋涂仪升至 Lv.3' },
@@ -157,7 +158,7 @@ const GAME_DATA = {
             desc: '博二核心先锋。旋涂制膜质量顶级，实验室通宵卷王。'
         },
         {
-            id: 'zhangshipeng', name: '章仕鹏', grade: '博士二年级', gradeYear: 2, avatar: '🔭', tier: 'SR',
+            id: 'zhangshipeng', name: '章仕朋', grade: '博士二年级', gradeYear: 2, avatar: '🔭', tier: 'SR',
             stageReq: 2, stipend: 80,
             unlockConditions: [
                 { type: 'facility', facId: 'uv_station', count: 1, desc: '配备紫外探测测试站' },
@@ -171,7 +172,7 @@ const GAME_DATA = {
             desc: '博二灵感担当。紫外探测与文献雷达，点子极多。'
         },
         {
-            id: 'xiazhenghao', name: '夏征浩', grade: '直博三年级', gradeYear: 3, avatar: '🤖', tier: 'SSR',
+            id: 'xiazhenghao', name: '夏政豪', grade: '直博三年级', gradeYear: 3, avatar: '🤖', tier: 'SSR',
             stageReq: 3, stipend: 150,
             unlockConditions: [
                 { type: 'facility', facId: 'xrd_diffractometer', count: 1, desc: '配备 X 射线粉末衍射仪 XRD' },
@@ -200,7 +201,7 @@ const GAME_DATA = {
             desc: '博三中流砥柱，组会台柱子。精通材料合成与变温 PL 动力学。'
         },
         {
-            id: 'jixinzhen', name: '姬欣振', grade: '博士四年级', gradeYear: 4, avatar: '⚡', tier: 'SSR',
+            id: 'jixinzhen', name: '季欣振', grade: '博士四年级', gradeYear: 4, avatar: '⚡', tier: 'SSR',
             stageReq: 3, stipend: 400,
             unlockConditions: [
                 { type: 'facility', facId: 'xeon_server', count: 1, desc: '配备双路 Xeon 超算节点' },
@@ -267,7 +268,7 @@ const GAME_DATA = {
             mechanicDesc: '后勤动力源。产出咖啡豆，可激活全组效率翻倍或组会文献精读！',
             maxLevel: 5,
             upgradeBaseCost: 2.0,
-            desc: '9 Bar 恒压萃取，储微红的快乐源泉，全组提神续命神器。'
+            desc: '9 Bar 恒压萃取，初唯宏的快乐源泉，全组提神续命神器。'
         },
         {
             id: 'glovebox_spin',
@@ -285,7 +286,7 @@ const GAME_DATA = {
             mechanicDesc: '稳产主力。消耗前驱液旋涂成高质量致密薄膜，供表征与器件使用！',
             maxLevel: 5,
             upgradeBaseCost: 3.0,
-            desc: '水氧低于 0.1 ppm，林率领招牌工位，产出高质量致密钙钛矿薄膜。'
+            desc: '水氧低于 0.1 ppm，霖率领招牌工位，产出高质量致密钙钛矿薄膜。'
         },
         {
             id: 'xrd_diffractometer',
@@ -318,7 +319,7 @@ const GAME_DATA = {
             recipeDesc: '🧤 钙钛矿薄膜×1 ➔ ☀️ UV-Vis吸收谱×1',
             baseYield: 1.0,
             mechanic: 'absorption',
-            mechanicDesc: '光学带隙表征。取样薄膜测定吸收边与 Tauc Plot，宋科新招牌工位。',
+            mechanicDesc: '光学带隙表征。取样薄膜测定吸收边与 Tauc Plot，颂科新招牌工位。',
             maxLevel: 5,
             upgradeBaseCost: 10.0,
             desc: '双光束全波段吸收光谱系统，测定半导体光学带隙与能级跃迁。'
@@ -339,7 +340,7 @@ const GAME_DATA = {
             mechanicDesc: '可切换模式。日盲模式产紫外数据；可见光模式兼产薄膜。',
             maxLevel: 5,
             upgradeBaseCost: 18.0,
-            desc: '深紫外 DUV 光源与皮安计测试系统，章仕鹏招牌工位。'
+            desc: '深紫外 DUV 光源与皮安计测试系统，章仕朋招牌工位。'
         },
         {
             id: 'qe_pro_spec',
@@ -375,7 +376,7 @@ const GAME_DATA = {
             mechanicDesc: '产出理论算力，可「注入」在写论文直接缩短撰写 DDL。',
             maxLevel: 5,
             upgradeBaseCost: 40.0,
-            desc: '32核/64线程 · VASP/Gaussian 建模集群，姬欣振招牌工位。'
+            desc: '32核/64线程 · VASP/Gaussian 建模集群，季欣振招牌工位。'
         },
         {
             id: 'thermal_evap',
@@ -585,7 +586,7 @@ const GAME_DATA = {
             basePrestige: 18,
             reqData: { precursors: 20, films: 18, absData: 10 },
             journalNames: { 4: '物理学报', 3: 'J. Phys. Chem. Lett.', 2: 'Opt. Lett.', 1: 'Nano Energy', supreme: 'Nat. Commun.' },
-            desc: '测定双光束全波段吸收边与 Tauc Plot，宋科新招牌工位带隙表征大作。'
+            desc: '测定双光束全波段吸收边与 Tauc Plot，颂科新招牌工位带隙表征大作。'
         },
         {
             id: 'uv_blind_paper',
@@ -596,7 +597,7 @@ const GAME_DATA = {
             basePrestige: 25,
             reqData: { precursors: 25, films: 20, absData: 12, uvData: 10 },
             journalNames: { 4: 'Mater. Lett.', 3: 'IEEE Electron Dev. Lett.', 2: 'ACS Photonics', 1: 'Light: Sci. Appl.', supreme: 'Nature Photonics' },
-            desc: '吸收带隙调控与微秒级日盲探测响应，章仕鹏招牌工位代表作。'
+            desc: '吸收带隙调控与微秒级日盲探测响应，章仕朋招牌工位代表作。'
         },
         {
             id: 'pl_dynamics_paper',
@@ -629,7 +630,7 @@ const GAME_DATA = {
             basePrestige: 55,
             reqData: { precursors: 35, xrdData: 18, spectra: 18, compute: 15 },
             journalNames: { 4: 'J. Phys. Chem. C', 3: 'Chem. Sci.', 2: 'Chem. Mater.', 1: 'JACS', supreme: 'Nature' },
-            desc: '超算集群 DFT 理论建模与原位变温 PL 完美印证，姬欣振与章梦遥联袂攻坚！'
+            desc: '超算集群 DFT 理论建模与原位变温 PL 完美印证，季欣振与章梦遥联袂攻坚！'
         },
         {
             id: 'xray_scintillator_paper',
