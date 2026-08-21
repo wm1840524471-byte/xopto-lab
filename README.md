@@ -2,13 +2,17 @@
 
 > **从白手起家的初创小隔间，一步步打造享誉全球的光电与半导体科研圣殿！**
 
-一款基于真实高校科研课题组、前沿光电/半导体硬科技研发为背景的**深度模拟经营与放置点击游戏**。
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![Platform: Web](https://img.shields.io/badge/Platform-Web%20%7C%20Mobile-orange.svg)](https://wm1840524471-byte.github.io/xopto-lab/)
+
+一款基于真实高校科研课题组、前沿光电/半导体硬科技研发为背景的**深度模拟经营与放置点击开源游戏**。
 
 ---
 
 ## 🎮 在线试玩 (GitHub Pages)
 
-👉 **立即体验**：[https://wm1840524471-byte.github.io/xopto-lab/](https://wm1840524471-byte.github.io/xopto-lab/) *(开启 GitHub Pages 后即可访问)*
+👉 **立即体验**：[https://wm1840524471-byte.github.io/xopto-lab/](https://wm1840524471-byte.github.io/xopto-lab/)
 
 - 📱 **全平台自适应**：完美兼容 iPhone、Android 手机浏览器、微信内置浏览器与 PC 桌面端；
 - ⚡ **纯原生轻量**：零第三方庞大依赖，首屏体积小于 200KB，秒开即玩；
@@ -37,32 +41,32 @@
 
 ---
 
-## 🚀 本地运行
+## 🚀 本地运行与开发
 
 无需安装任何构建工具，直接在本地启动任意静态服务器即可：
 
 ```bash
 # 方式 1：Python 一键启动
-python3 -m http.server 8080
+python3 -m http.server 8090
 
 # 方式 2：使用 Node.js http-server
-npx http-server -p 8080
+npx http-server -p 8090
 
 # 打开浏览器访问：
-http://localhost:8080
+http://localhost:8090
 ```
 
 ---
 
-## 🛠️ 技术栈
+## 🤝 如何参与开源贡献 (Contributing)
 
-- **前端架构**：Vanilla JavaScript (ES6+), HTML5, CSS3
-- **音频引擎**：Web Audio API (零外部音频文件依赖)
-- **存储方案**：Web LocalStorage (自动持久化与版本热迁移)
-- **部署环境**：GitHub Pages / Vercel / Cloudflare Pages / 任意静态托管平台
+我们非常欢迎大家参与共同维护与创作！
+- 想要添加**新仪器设备、新论文研究课题、新同门角色/特质**？
+- 请参阅：👉 **[开源贡献指南 (CONTRIBUTING.md)](CONTRIBUTING.md)**
+- 遇到 Bug 或有新点子，欢迎直接提交 [Issue](../../issues) 或 [Pull Request](../../pulls)！
 
 ---
 
-## 📄 开源许可证
+## 📄 开源许可证 (License)
 
-本项目基于 [MIT License](LICENSE) 开源。欢迎 Star、Fork 并提交 Pull Request 共同共建更丰富的科研学术模拟宇宙！
+本项目采用 [MIT License](LICENSE) 开源协议，欢迎自由分发、学习与二次创作。
