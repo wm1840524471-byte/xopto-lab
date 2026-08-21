@@ -609,17 +609,27 @@ class GameEngine {
         return { success: true };
     }
 
+    // 获取设备当前购买价格（第 k 台 = base * 1.15^k 递增阶梯定价）
+    getEquipmentPrice(eqId) {
+        const eq = GAME_DATA.equipmentList.find(e => e.id === eqId);
+        if (!eq) return 0;
+        const count = this.stationInstances.filter(s => s.eqId === eqId).length;
+        return Math.round(eq.price * Math.pow(1.15, count) * 100) / 100;
+    }
+
     // ==================== 购买设备 ====================
     buyEquipment(eqId) {
         const eq = GAME_DATA.equipmentList.find(e => e.id === eqId);
         if (!eq) return { error: '未找到设备！' };
-        if (this.funding < eq.price) return { error: `经费不足！需 ${eq.price} 万元。` };
+        const price = this.getEquipmentPrice(eqId);
+        if (this.funding < price) return { error: `经费不足！需 ${price} 万元。` };
 
-        this.funding -= eq.price;
+        this.funding -= price;
         const inst = this._createStationInstance(eqId);
         this.stationInstances.push(inst);
+        const ownedNow = this.stationInstances.filter(s => s.eqId === eqId).length;
         window.eventEngine.addLog(this.time.year, this.time.month, this.getTenDayStr(),
-            `🔬 添置【${eq.name}】！指派成员入驻操作！`, 'normal');
+            `🔬 添置【${eq.name}】（第 ${ownedNow} 台）！指派成员入驻操作！`, 'normal');
         this._checkQuestProgress();
         this.checkAchievements();
         this._checkMilestoneUnlocks();
@@ -1551,7 +1561,7 @@ class GameEngine {
             return { error: `综合度 ${Math.floor(comboScore)} 不足！投【${zone.name}】需综合度 ${zone.requireCombo}。请降档或提升团队/数据投入。` };
         }
 
-        const funding = Math.round(topic.equipCost * 0.5 * zone.mult);
+        const funding = Math.round(topic.equipCost * 0.6 * Math.pow(zone.mult, 0.8));
         const prestige = Math.round(topic.basePrestige * zone.rewardPrestigeMult);
 
         this.currentPaperProject = {

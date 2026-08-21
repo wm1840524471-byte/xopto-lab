@@ -1127,9 +1127,10 @@ class UIController {
                 }
                 visibleCount++;
                 const locked = eq.stageReq > e.labStage;
-                const canAfford = e.funding >= eq.price;
-                const mechanic = eq.mechanic ? `<div class="shop-mechanic">${eq.mechanicDesc}</div>` : '';
                 const ownedCount = e.stationInstances.filter(s => s.eqId === eq.id).length;
+                const currentPrice = e.getEquipmentPrice ? e.getEquipmentPrice(eq.id) : eq.price;
+                const canAfford = e.funding >= currentPrice;
+                const mechanic = eq.mechanic ? `<div class="shop-mechanic">${eq.mechanicDesc}</div>` : '';
                 const catObj = (GAME_DATA.equipmentCategories || []).find(x => x.id === eq.category) || { name: '专业仪器', icon: '🔬' };
 
                 html += `<div class="shop-card ${locked ? 'shop-locked' : ''}">
@@ -1143,7 +1144,7 @@ class UIController {
                         ${mechanic}
                         ${eq.type === 'station' ? `<div style="font-size:11px;color:#38bdf8;margin:2px 0 4px 0;font-weight:600">⚡ 纯连点流速: +${eq.baseYield.toFixed(2)} ${eq.productName} / 秒 (指派同门在岗连点)</div>` : ''}
                         <div class="shop-desc">${eq.desc}</div>
-                        <div class="shop-price">💵 ${eq.price} 万元</div>
+                        <div class="shop-price">💵 ${currentPrice} 万元 ${ownedCount > 0 ? `<small style="font-size:10px;color:#94a3b8"> (第${ownedCount+1}台: +15%)</small>` : ''}</div>
                         ${locked ? `<div class="shop-locked-tag">🔒 需课题组阶段 ${eq.stageReq}</div>` : ''}
                     </div>
                     ${!locked ? `<button class="btn-buy" onclick="window.ui.buyEq('${eq.id}')" ${!canAfford ? 'disabled' : ''}>${canAfford ? '购置部署 🛒' : '经费不足'}</button>` : ''}

@@ -1,6 +1,11 @@
 # 《X-Opto Lab 课题组模拟器》交接文档
 
-> 更新日期：2026-08-21（近期大重构后）
+> **v2 数值对齐更新（2026-08-21）**：
+> 1. `js/gameData.js` 分区倍率压缩至 `1 / 2.5 / 6 / 15 / 40`（旧 1/3/8/25/80 已废弃），平滑后期收益曲线。
+> 2. `js/engine.js` 设备购置采用动态递增定价：第 $k$ 台设备造价 $= \text{base} \times 1.15^k$，防止单设备无限低成本叠加。
+> 3. `js/engine.js` 论文资助公式精调为：$\text{funding} = \text{round}(\text{equipCost} \times 0.6 \times \text{mult}^{0.8})$。
+> 4. `js/ui.js` 商店价格展示与购买拦截同步接入 `getEquipmentPrice` 动态价。
+>
 > 项目路径：`/Users/wangmeng/.gemini/antigravity/scratch/idle-game/`
 > 纯 HTML/JS 单页游戏，无构建依赖，浏览器直接打开 `index.html` 即玩。
 

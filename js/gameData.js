@@ -536,13 +536,13 @@ const GAME_DATA = {
     paperZones: [
         { id: 'zone4', name: '4区',   mult: 1,    requireCombo: 0,   baseSuccess: 0.95, icon: '📗',
           desc: 'SCI 4区 · 普通期刊，校级课题启动资助', rewardPrestigeMult: 0.5 },
-        { id: 'zone3', name: '3区',   mult: 3,    requireCombo: 20,  baseSuccess: 0.70, icon: '📘',
+        { id: 'zone3', name: '3区',   mult: 2.5,  requireCombo: 20,  baseSuccess: 0.70, icon: '📘',
           desc: 'SCI 3区 · 中级期刊，市级/青年科学基金重点资助', rewardPrestigeMult: 1.5 },
-        { id: 'zone2', name: '2区',   mult: 8,    requireCombo: 45,  baseSuccess: 0.45, icon: '📙',
+        { id: 'zone2', name: '2区',   mult: 6,    requireCombo: 45,  baseSuccess: 0.45, icon: '📙',
           desc: 'SCI 2区 · 权威期刊，国家自然科学面上项目资助', rewardPrestigeMult: 4 },
-        { id: 'zone1', name: '1区',   mult: 25,   requireCombo: 70,  baseSuccess: 0.22, icon: '📕',
+        { id: 'zone1', name: '1区',   mult: 15,   requireCombo: 70,  baseSuccess: 0.22, icon: '📕',
           desc: 'SCI 1区 · 顶尖期刊，国家重点研发计划千万级战略资助', rewardPrestigeMult: 10 },
-        { id: 'supreme', name: '顶刊', mult: 80,  requireCombo: 100, baseSuccess: 0.08, icon: '👑',
+        { id: 'supreme', name: '顶刊', mult: 40,  requireCombo: 100, baseSuccess: 0.08, icon: '👑',
           desc: 'Nature/Science 正刊，国家战略科技领军大奖（数千万经费+领袖声望）！', rewardPrestigeMult: 30 }
     ],
 
