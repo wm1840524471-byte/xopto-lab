@@ -1,0 +1,16 @@
+# X-Opto Lab Simulator - Cursor Rules & AI Assistant Context
+
+You are developing/maintaining "X-Opto Lab Simulator" (《X-Opto Lab 课题组模拟器》), a pure Vanilla JS (ES6+) idle/tycoon web game based on academic research in optoelectronics and semiconductor materials.
+
+## Technical Principles:
+1. Zero-build architecture: HTML5, CSS3, Vanilla JS. DO NOT introduce React, Vue, Webpack, Vite, or external npm bundle dependencies.
+2. Web Audio: All sounds are procedurally generated in `js/soundEngine.js`. Do not add external MP3/WAV files.
+3. Privacy & Character Names: Always use fun, respectful homophonic academic names (e.g. 初唯宏, 颂科新, 霖率领, 章仕朋, 夏政豪, 章梦遥, 季欣振, 汪猛). Do not use unmasked real personal names.
+
+## Data Configuration (`js/gameData.js`):
+- `GAME_DATA.equipmentList`: Instrument chain & recipe inputs/outputs.
+- `GAME_DATA.paperTopics`: Scientific paper research topics and review tiers.
+- `GAME_DATA.legendaryMembers`: PhD researcher roster with aptitude, traits, and multi-condition unlocks.
+- `GAME_DATA.stipendConfig`: Monthly student stipend payroll standards.
+
+Always ensure JavaScript syntax is 100% valid before committing.
