@@ -24,18 +24,18 @@ const GAME_DATA = {
     },
 
     // ==================== 产学研全品类回收与样品技术转让阶梯价格 ====================
-    // 根据获取难易程度合理梯级定价，1万元 = 10,000元，严格控制数值平衡
+    // 定位为辅助耗材补贴与零钱周转，核心大额科研经费必须通过发表顶刊论文获得！
     recyclePrices: {
-        precursors: { name: '前驱体溶液',   icon: '🧪', unitYuan: 1,    unitWan: 0.0001, desc: '基础配制溶液回收变现（1元/份）' },
-        films:      { name: '钙钛矿薄膜',   icon: '🧤', unitYuan: 10,   unitWan: 0.0010, desc: '标准实验薄膜样品' },
-        coffee:     { name: '浓缩咖啡豆',   icon: '☕', unitYuan: 20,   unitWan: 0.0020, desc: '特配实验提神咖啡豆' },
-        xrdData:    { name: '晶体XRD谱',    icon: '📐', unitYuan: 30,   unitWan: 0.0030, desc: '晶相结构衍射测试样' },
-        absData:    { name: 'UV-Vis吸收谱', icon: '☀️', unitYuan: 50,   unitWan: 0.0050, desc: '带隙光学吸收数据包' },
-        uvData:     { name: '紫外响应数据', icon: '🟣', unitYuan: 100,  unitWan: 0.0100, desc: '日盲光电探测响应集' },
-        spectra:    { name: '变温荧光光谱', icon: '🌈', unitYuan: 200,  unitWan: 0.0200, desc: '低温PL激子发光光谱' },
-        compute:    { name: '理论机理算力', icon: '💻', unitYuan: 350,  unitWan: 0.0350, desc: 'DFT/Gaussian机理算力' },
-        devices:    { name: '光电器件能级', icon: '⚡', unitYuan: 600,  unitWan: 0.0600, desc: '高能级完整光电器件' },
-        imaging:    { name: '闪烁体成像',   icon: '☢️', unitYuan: 1200, unitWan: 0.1200, desc: '高能X射线成像闪烁屏' },
+        precursors: { name: '前驱体溶液',   icon: '🧪', unitYuan: 1,   unitWan: 0.00010, desc: '基础配制溶液回收补贴（1元/份）' },
+        films:      { name: '钙钛矿薄膜',   icon: '🧤', unitYuan: 2,   unitWan: 0.00020, desc: '标准实验薄膜样品补贴' },
+        coffee:     { name: '浓缩咖啡豆',   icon: '☕', unitYuan: 3,   unitWan: 0.00030, desc: '特配提神咖啡豆补贴' },
+        xrdData:    { name: '晶体XRD谱',    icon: '📐', unitYuan: 5,   unitWan: 0.00050, desc: '晶相衍射测试样补贴' },
+        absData:    { name: 'UV-Vis吸收谱', icon: '☀️', unitYuan: 8,   unitWan: 0.00080, desc: '带隙光学吸收数据包' },
+        uvData:     { name: '紫外响应数据', icon: '🟣', unitYuan: 15,  unitWan: 0.00150, desc: '日盲光电探测响应集' },
+        spectra:    { name: '变温荧光光谱', icon: '🌈', unitYuan: 25,  unitWan: 0.00250, desc: '低温PL激子发光光谱' },
+        compute:    { name: '理论机理算力', icon: '💻', unitYuan: 40,  unitWan: 0.00400, desc: 'DFT/Gaussian机理算力' },
+        devices:    { name: '光电器件能级', icon: '⚡', unitYuan: 60,  unitWan: 0.00600, desc: '高能级完整光电器件' },
+        imaging:    { name: '闪烁体成像',   icon: '☢️', unitYuan: 100, unitWan: 0.01000, desc: '高能X射线成像闪烁屏' },
     },
 
     // ==================== 资质系统 ====================
@@ -535,15 +535,15 @@ const GAME_DATA = {
     // ==================== 论文投递分区 (立项时手选) ====================
     paperZones: [
         { id: 'zone4', name: '4区',   mult: 1,    requireCombo: 0,   baseSuccess: 0.95, icon: '📗',
-          desc: 'SCI 4区 · 普通期刊，稳收保底', rewardPrestigeMult: 0.5 },
-        { id: 'zone3', name: '3区',   mult: 2,    requireCombo: 20,  baseSuccess: 0.70, icon: '📘',
-          desc: 'SCI 3区 · 中级期刊，常规成果', rewardPrestigeMult: 1 },
-        { id: 'zone2', name: '2区',   mult: 4,    requireCombo: 45,  baseSuccess: 0.45, icon: '📙',
-          desc: 'SCI 2区 · 较好期刊，需扎实综合度', rewardPrestigeMult: 2 },
-        { id: 'zone1', name: '1区',   mult: 8,    requireCombo: 70,  baseSuccess: 0.22, icon: '📕',
-          desc: 'SCI 1区 · 顶级期刊，风险高回报大', rewardPrestigeMult: 4 },
-        { id: 'supreme', name: '顶刊', mult: 16,  requireCombo: 100, baseSuccess: 0.08, icon: '👑',
-          desc: 'Nature/Science 正刊，搏一把惊天动地', rewardPrestigeMult: 8 }
+          desc: 'SCI 4区 · 普通期刊，校级课题启动资助', rewardPrestigeMult: 0.5 },
+        { id: 'zone3', name: '3区',   mult: 3,    requireCombo: 20,  baseSuccess: 0.70, icon: '📘',
+          desc: 'SCI 3区 · 中级期刊，市级/青年科学基金重点资助', rewardPrestigeMult: 1.5 },
+        { id: 'zone2', name: '2区',   mult: 8,    requireCombo: 45,  baseSuccess: 0.45, icon: '📙',
+          desc: 'SCI 2区 · 权威期刊，国家自然科学面上项目资助', rewardPrestigeMult: 4 },
+        { id: 'zone1', name: '1区',   mult: 25,   requireCombo: 70,  baseSuccess: 0.22, icon: '📕',
+          desc: 'SCI 1区 · 顶尖期刊，国家重点研发计划千万级战略资助', rewardPrestigeMult: 10 },
+        { id: 'supreme', name: '顶刊', mult: 80,  requireCombo: 100, baseSuccess: 0.08, icon: '👑',
+          desc: 'Nature/Science 正刊，国家战略科技领军大奖（数千万经费+领袖声望）！', rewardPrestigeMult: 30 }
     ],
 
     // ==================== 论文课题库 (配方 + 分区投递) ====================

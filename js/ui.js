@@ -987,7 +987,7 @@ class UIController {
             }
 
             const canStart = !e.currentPaperProject && allMet;
-            const baseFunding = Math.round(topic.equipCost * 0.1);
+            const baseFunding = Math.round(topic.equipCost * 0.5);
 
             html += `<div class="paper-topic-card">
                 <div class="paper-topic-header">
@@ -997,8 +997,8 @@ class UIController {
                 <div class="paper-topic-desc">${topic.desc}</div>
                 <div class="paper-recipe">${baseRecipeHtml}</div>
                 <div class="paper-reward">
-                    <span class="reward-funding">💵 基础奖励 ${baseFunding}万(4区)</span>
-                    <span class="reward-prestige">💎 投越高区奖励成倍!</span>
+                    <span class="reward-funding">💵 基础资助 ${baseFunding}万 (4区起)</span>
+                    <span class="reward-prestige">💎 冲顶刊最高可获 ${baseFunding * 80} 万巨奖!</span>
                 </div>
                 <button class="btn-start-paper" onclick="window.ui.openPaperModal('${topic.id}')" ${!canStart ? 'disabled' : ''}>
                     ${e.currentPaperProject ? '已有论文进行中' : allMet ? '立项选档 →' : '数据不足'}
@@ -1753,10 +1753,10 @@ class UIController {
         let zoneHtml = '';
         for (let z of GAME_DATA.paperZones) {
             const canReach = liveCombo >= z.requireCombo;
-            const funding = Math.round(topic.equipCost * 0.1 * z.mult);
+            const funding = Math.round(topic.equipCost * 0.5 * z.mult);
             const selected = this.paperZone === z.id;
             zoneHtml += `<div class="zone-option ${selected ? 'selected' : ''} ${canReach ? '' : 'locked'}" onclick="window.ui.selectZone('${z.id}')">
-                <div class="zone-head"><span class="zone-icon">${z.icon}</span><span class="zone-name">${z.name}</span><span class="zone-funding">💵${funding}万</span></div>
+                <div class="zone-head"><span class="zone-icon">${z.icon}</span><span class="zone-name">${z.name}</span><span class="zone-funding">💵 +${funding}万</span></div>
                 <div class="zone-desc">${z.desc}</div>
                 <div class="zone-gate">${canReach ? `综合度${Math.floor(liveCombo)}/${z.requireCombo} ✅` : `综合度${Math.floor(liveCombo)}/${z.requireCombo} 🔒`}</div>
             </div>`;

@@ -1539,7 +1539,7 @@ class GameEngine {
             return { error: `综合度 ${Math.floor(comboScore)} 不足！投【${zone.name}】需综合度 ${zone.requireCombo}。请降档或提升团队/数据投入。` };
         }
 
-        const funding = Math.round(topic.equipCost * 0.1 * zone.mult);
+        const funding = Math.round(topic.equipCost * 0.5 * zone.mult);
         const prestige = Math.round(topic.basePrestige * zone.rewardPrestigeMult);
 
         this.currentPaperProject = {
