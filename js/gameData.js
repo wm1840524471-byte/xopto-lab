@@ -232,11 +232,23 @@ const GAME_DATA = {
         }
     ],
 
-    // ==================== 10 大仪器设备科研产业链 ====================
+    // ==================== 仪器学科专业分类定义 ====================
+    equipmentCategories: [
+        { id: 'all', name: '全部仪器', icon: '🌟' },
+        { id: 'synthesis', name: '材料制备', icon: '🧪', desc: '化学合成、旋涂成膜、真空蒸镀与超净间' },
+        { id: 'spectroscopy', name: '光学表征', icon: '📐', desc: 'XRD、紫外吸收、变温荧光与飞秒激光' },
+        { id: 'device', name: '器件测试', icon: '⚡', desc: '日盲紫外探测、PeLED 与 X 射线闪烁成像' },
+        { id: 'hpc', name: '超算机理', icon: '💻', desc: 'Xeon 节点、GPU 智算与 DFT 高通量计算' },
+        { id: 'bigscience', name: '世纪重器', icon: '🔬', desc: '球差校正透射电镜与国家同步辐射专用线站' },
+        { id: 'facility', name: '后勤动力', icon: '☕', desc: '提神续命与组会研讨工作站' }
+    ],
+
+    // ==================== 15 大科研重器产业链 ====================
     equipmentList: [
         {
             id: 'fume_hood',
             name: '防腐防爆化学通风橱',
+            category: 'synthesis',
             icon: '🧪',
             price: 3,
             stageReq: 1,
@@ -255,6 +267,7 @@ const GAME_DATA = {
         {
             id: 'coffee_machine',
             name: '瑞士全自动双泵意式咖啡机',
+            category: 'facility',
             icon: '☕',
             price: 5,
             stageReq: 1,
@@ -273,6 +286,7 @@ const GAME_DATA = {
         {
             id: 'glovebox_spin',
             name: '高纯手套箱旋涂仪',
+            category: 'synthesis',
             icon: '🧤',
             price: 8,
             stageReq: 1,
@@ -291,6 +305,7 @@ const GAME_DATA = {
         {
             id: 'xrd_diffractometer',
             name: 'X 射线粉末衍射仪 (XRD)',
+            category: 'spectroscopy',
             icon: '📐',
             price: 20,
             stageReq: 1,
@@ -309,6 +324,7 @@ const GAME_DATA = {
         {
             id: 'uv_vis_spec',
             name: 'UV-Vis 紫外可见分光光度计',
+            category: 'spectroscopy',
             icon: '☀️',
             price: 35,
             stageReq: 2,
@@ -327,6 +343,7 @@ const GAME_DATA = {
         {
             id: 'uv_station',
             name: '紫外/日盲光电测试台',
+            category: 'device',
             icon: '🟣',
             price: 60,
             stageReq: 2,
@@ -345,6 +362,7 @@ const GAME_DATA = {
         {
             id: 'qe_pro_spec',
             name: 'QE Pro 变温荧光光谱仪',
+            category: 'spectroscopy',
             icon: '🌈',
             price: 90,
             stageReq: 2,
@@ -363,6 +381,7 @@ const GAME_DATA = {
         {
             id: 'xeon_server',
             name: '双路 Xeon 超算计算节点',
+            category: 'hpc',
             icon: '💻',
             price: 150,
             stageReq: 3,
@@ -381,6 +400,7 @@ const GAME_DATA = {
         {
             id: 'thermal_evap',
             name: '超高真空多源热蒸镀系统',
+            category: 'synthesis',
             icon: '⚡',
             price: 250,
             stageReq: 3,
@@ -399,6 +419,7 @@ const GAME_DATA = {
         {
             id: 'xray_imaging_station',
             name: '高灵敏 X 射线动态闪烁体成像台',
+            category: 'device',
             icon: '☢️',
             price: 400,
             stageReq: 3,
@@ -417,6 +438,7 @@ const GAME_DATA = {
         {
             id: 'cleanroom_iso5',
             name: '千级恒温恒湿无尘超净实验室工程',
+            category: 'synthesis',
             icon: '🏛️',
             price: 650,
             stageReq: 4,
@@ -435,6 +457,7 @@ const GAME_DATA = {
         {
             id: 'femtosecond_laser',
             name: '飞秒超快瞬态吸收激光光谱系统 (fs-TA)',
+            category: 'spectroscopy',
             icon: '⚡',
             price: 1200,
             stageReq: 4,
@@ -453,6 +476,7 @@ const GAME_DATA = {
         {
             id: 'hpc_gpu_cluster',
             name: '百卡 A100/H100 AI+DFT 智算超算集群',
+            category: 'hpc',
             icon: '🌐',
             price: 2000,
             stageReq: 4,
@@ -471,6 +495,7 @@ const GAME_DATA = {
         {
             id: 'tem_cs_corrected',
             name: '球差校正透射电子显微镜 (Titan Cs-TEM)',
+            category: 'bigscience',
             icon: '🔬',
             price: 3500,
             stageReq: 5,
@@ -489,6 +514,7 @@ const GAME_DATA = {
         {
             id: 'synchrotron_beamline',
             name: '国家重大科技基础设施 · 同步辐射专用线站',
+            category: 'bigscience',
             icon: '🌀',
             price: 6500,
             stageReq: 5,

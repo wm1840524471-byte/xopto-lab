@@ -404,158 +404,236 @@ class UIController {
                 </div>
             `;
             c.innerHTML = consoleHtml + recycleHtml + emptyBanner; 
-            return; 
         }
 
-        // ==================== 重点升级：醒目高对比度设备卡片与人岗匹配专精共振 ====================
-        const cardsHtml = e.stationInstances.map(inst => {
-            const eq = GAME_DATA.equipmentList.find(x => x.id === inst.eqId);
-            if (!eq || eq.type !== 'station') return '';
-            const op = inst.operatorId ? e.members.find(m => m.id === inst.operatorId) : null;
-            const fitInfo = e.getStationFitInfo(op, eq.id);
-            const aptInfo = GAME_DATA.aptitudes[fitInfo.aptKey] || { name: '实验动手力', icon: '🔧' };
-            const opCPS = op ? e.getMemberAutoCPS(op) : 0;
+        // ==================== 仪器学科分类与状态统计大盘 ====================
+        this.stationCategoryFilter = this.stationCategoryFilter || 'all';
+        this.stationStatusFilter = this.stationStatusFilter || 'all';
 
-            const { amount: yieldDisplay } = e._calcYield(inst);
+        const totalCount = e.stationInstances.length;
+        const runningCount = e.stationInstances.filter(s => s.operatorId && !s.brokenUntilDay && !s.isLackingMaterials).length;
+        const vacantCount = e.stationInstances.filter(s => !s.operatorId).length;
+        const lackingCount = e.stationInstances.filter(s => s.isLackingMaterials).length;
 
-            let mechanicHint = '';
-            let specialStatus = '';
-            if (eq.mechanic === 'switch') {
-                const modeName = inst.switchMode === 'uvData' ? '日盲模式' : '可见光模式';
-                mechanicHint = `🔄 <b>${modeName}</b> · ${eq.mechanicDesc}`;
-            } else if (eq.mechanic === 'tradeoff') {
-                const modeName = inst.tradeoffMode === 'low' ? '低温高质量' : '高温高产';
-                mechanicHint = `🌡️ <b>${modeName}</b> · ${eq.mechanicDesc}`;
-            } else if (eq.mechanic === 'batch') {
-                mechanicHint = `📦 ${eq.mechanicDesc}`;
-                if (inst.batchCountdown > 0) specialStatus = `<div class="station-batch-hint">⏳ 批次预热中... 还需 ${inst.batchCountdown} 天就绪</div>`;
-            } else if (eq.mechanic === 'rampup') {
-                mechanicHint = `📈 ${eq.mechanicDesc}`;
-                if (inst.rampupStreak > 0) specialStatus = `<div class="station-rampup-streak">🔥 连续运转 ${inst.rampupStreak} 天 · 连续产出加成 +${Math.round(inst.rampupStreak * 1.5)}%</div>`;
-            } else if (eq.mechanic === 'inject') {
-                mechanicHint = `💉 ${eq.mechanicDesc}`;
-            } else if (eq.mechanic === 'coffee') {
-                mechanicHint = `☕ ${eq.mechanicDesc}`;
+        // 分类胶囊
+        const catPills = (GAME_DATA.equipmentCategories || []).map(cat => {
+            let count = 0;
+            if (cat.id === 'all') {
+                count = totalCount;
             } else {
-                mechanicHint = `🔧 ${eq.mechanicDesc}`;
+                count = e.stationInstances.filter(s => {
+                    const eq = GAME_DATA.equipmentList.find(x => x.id === s.eqId);
+                    return eq && eq.category === cat.id;
+                }).length;
             }
-
-            let modeBtn = '';
-            if (eq.mechanic === 'switch' || eq.mechanic === 'tradeoff') {
-                modeBtn = `<button class="btn-station-sub" onclick="window.ui.switchMode('${inst.instanceId}')">🔄 切换模式</button>`;
-            }
-
-            let coffeeBtn = '';
-            if (eq.mechanic === 'coffee') {
-                const beans = Math.floor(e.inventory.coffee || 0);
-                coffeeBtn = `<button class="btn-station-sub btn-coffee" onclick="window.ui.activateCoffee()" ${beans < 3 ? 'disabled' : ''}>☕ 全组提神加速 (需3豆/余${beans})</button>`;
-            }
-
-            let injectBtn = '';
-            if (eq.mechanic === 'inject' && e.currentPaperProject) {
-                const compute = Math.floor(e.inventory.compute || 0);
-                injectBtn = `<button class="btn-station-sub btn-inject" onclick="window.ui.injectCompute()" ${compute < 10 ? 'disabled' : ''}>💉 算力注入论文 (需10点/余${compute})</button>`;
-            }
-
-            const upDetail = e.getStationUpgradeDetail(inst.instanceId);
-            const isMax = upDetail ? upDetail.isMax : inst.level >= eq.maxLevel;
-            const upgradeCost = upDetail ? upDetail.cost : eq.upgradeBaseCost * inst.level;
-            const canAfford = e.funding >= upgradeCost;
-            const upChancePercent = upDetail ? Math.round(upDetail.totalChance * 100) : 100;
-
-            const isLacking = inst.isLackingMaterials;
-            let liveClass = 'live-off';
-            let liveText = '⚪ 工位空置';
-            if (isLacking) {
-                liveClass = 'live-waiting';
-                liveText = '⚠️ 缺少原料待料中';
-            } else if (op) {
-                liveClass = 'live-on';
-                liveText = '🟢 正常运转中';
-            }
-
+            const isSel = this.stationCategoryFilter === cat.id;
             return `
-                <div class="station-card ${isLacking ? 'station-card-lacking' : op ? 'station-card-running' : 'station-card-vacant'}" id="card-${inst.instanceId}">
-                    <!-- 顶部状态与级别栏 -->
-                    <div class="station-top-strip">
-                        <div class="station-live-badge ${liveClass}">
-                            <span class="live-dot"></span>
-                            <span class="live-text">${liveText}</span>
-                        </div>
-                        <div class="station-top-right-group">
-                            <div class="station-level-pill">Lv.${inst.level} <small>/${eq.maxLevel}</small></div>
-                            <button class="btn-station-sell" onclick="event.stopPropagation(); window.ui.sellStationPrompt('${inst.instanceId}')" title="二手设备处置转让（退还80%经费）">♻️ 转让</button>
-                        </div>
-                    </div>
-
-                    <!-- 主展示区：大图标 + 名称 + 产出值 (支持直接点击指导) -->
-                    <div class="station-main-row" onclick="window.ui.handleClickStation('${inst.instanceId}', event)" title="⚡ 导师点击直接指导该设备实验（产出+连击+特效）">
-                        <div class="station-icon-halo">
-                            <span class="station-huge-icon">${eq.icon}</span>
-                        </div>
-                        <div class="station-primary-info">
-                            <div class="station-big-name">${eq.name}</div>
-                            <div class="station-yield-pill">
-                                <span class="syp-tag">连点流速:</span>
-                                <span class="syp-num">+${yieldDisplay.toFixed(2)}</span>
-                                <span class="syp-unit">${eq.productName} / 秒</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 上下游有机转化工艺配方 -->
-                    <div class="station-recipe-pill">
-                        <span class="srp-icon">⚗️</span>
-                        <span class="srp-text"><b>转化工艺:</b> ${eq.recipeDesc || '独立合成产出'}</span>
-                    </div>
-
-                    <!-- 机制说明 -->
-                    <div class="station-spec-banner">
-                        <span class="ssb-icon">💡</span>
-                        <span class="ssb-text">${mechanicHint}</span>
-                    </div>
-                    ${specialStatus}
-
-                    <!-- 专属操作员执勤插槽 (人岗匹配与专精共振高亮) -->
-                    <div class="station-op-slot ${op ? `op-slot-active ${fitInfo.badgeClass}` : 'op-slot-empty'}" onclick="window.ui.openAssign('${inst.instanceId}')" title="${fitInfo.fitDesc || '点击指派或更换操作员'}">
-                        <div class="op-slot-left">
-                            <span class="op-slot-avatar">${op ? op.avatar : '👤'}</span>
-                            <div class="op-slot-details">
-                                <div class="op-slot-name-row">
-                                    <span class="op-slot-name">${op ? op.name : '<span style="color:#f59e0b">未指派操作员（点击指派 ➕）</span>'}</span>
-                                    ${op ? `
-                                        <span class="op-apt-badge ${fitInfo.badgeClass}">${fitInfo.aptIcon} ${fitInfo.grade} · ${fitInfo.fitTag}</span>
-                                        <span class="op-cps-badge" title="操作员持续自动连点做实验">🤖 连点 ${opCPS.toFixed(1)} 击/秒</span>
-                                        ${fitInfo.hasTraitSynergy ? `<span class="op-trait-synergy" title="专属特质协同">🔥 特质×${fitInfo.traitMult.toFixed(1)}</span>` : ''}
-                                    ` : ''}
-                                </div>
-                                <div class="op-slot-meta">${op ? `${op.grade} · 连点效能 ${fitInfo.totalFitMult.toFixed(2)}x · 自动代打实验中` : `核心匹配资质: ${aptInfo.icon} ${aptInfo.name}`}</div>
-                            </div>
-                        </div>
-                        <button class="btn-op-action" onclick="event.stopPropagation(); window.ui.openAssign('${inst.instanceId}')">
-                            ${op ? '更换 ✏️' : '指派 ➕'}
-                        </button>
-                    </div>
-
-                    <!-- 底部操作与升级栏 -->
-                    <div class="station-footer-actions">
-                        ${modeBtn}
-                        ${coffeeBtn}
-                        ${injectBtn}
-                        ${!isMax ? `
-                            <button class="btn-station-upgrade" onclick="window.ui.upgrade('${inst.instanceId}')" ${!canAfford ? 'disabled' : ''} title="升级成功率: ${upChancePercent}% (含保底幸运值)">
-                                ⬆️ 强化 Lv.${inst.level+1} (${upgradeCost}万 · ${upChancePercent}%)
-                            </button>
-                        ` : '<span class="station-max-tag">👑 已升至最高阶</span>'}
-                        ${inst.upgradeLuck > 0 && !isMax ? `
-                            <div style="font-size:10px;color:#fbbf24;margin-top:2px;font-weight:600">💡 调试幸运保底: +${Math.round(inst.upgradeLuck * 100)}% 成功率</div>
-                        ` : ''}
-                    </div>
-                </div>
+                <button class="btn-eq-cat-pill ${isSel ? 'active' : ''}" onclick="window.ui.setStationCategoryFilter('${cat.id}')">
+                    <span class="ecp-icon">${cat.icon}</span>
+                    <span class="ecp-name">${cat.name}</span>
+                    <span class="ecp-count">(${count})</span>
+                </button>
             `;
         }).join('');
 
-        c.innerHTML = consoleHtml + recycleHtml + `<div class="stations-grid">${cardsHtml}</div>`;
+        // 状态过滤行
+        const statusChips = `
+            <div class="eq-status-filter-row">
+                <button class="btn-status-chip ${this.stationStatusFilter === 'all' ? 'active' : ''}" onclick="window.ui.setStationStatusFilter('all')">全部状态 (${totalCount})</button>
+                <button class="btn-status-chip chip-running ${this.stationStatusFilter === 'running' ? 'active' : ''}" onclick="window.ui.setStationStatusFilter('running')">🟢 运转中 (${runningCount})</button>
+                <button class="btn-status-chip chip-vacant ${this.stationStatusFilter === 'vacant' ? 'active' : ''}" onclick="window.ui.setStationStatusFilter('vacant')">⚪ 空置待命 (${vacantCount})</button>
+                ${lackingCount > 0 ? `<button class="btn-status-chip chip-lacking ${this.stationStatusFilter === 'lacking' ? 'active' : ''}" onclick="window.ui.setStationStatusFilter('lacking')">⚠️ 缺料 (${lackingCount})</button>` : ''}
+            </div>
+        `;
+
+        const controlHubHtml = `
+            <div class="eq-control-hub">
+                <div class="ech-top-bar">
+                    <div class="ech-title-col">
+                        <span class="ech-title">🔬 实验室仪器集控大盘</span>
+                        <span class="ech-sub">已部署 <b>${totalCount}</b> 台 · <b>${runningCount}</b> 台运转中 · <b>${vacantCount}</b> 台待命</span>
+                    </div>
+                    <button class="btn-open-matrix" onclick="window.ui.openEqMatrixModal()">📊 全景大盘</button>
+                </div>
+                <div class="eq-cat-pills-row">
+                    ${catPills}
+                </div>
+                ${statusChips}
+            </div>
+        `;
+
+        // 过滤设备实例
+        const filteredInstances = e.stationInstances.filter(inst => {
+            const eq = GAME_DATA.equipmentList.find(x => x.id === inst.eqId);
+            if (!eq) return false;
+            if (this.stationCategoryFilter !== 'all' && eq.category !== this.stationCategoryFilter) return false;
+            const op = inst.operatorId ? e.members.find(m => m.id === inst.operatorId) : null;
+            const isLacking = inst.isLackingMaterials;
+            if (this.stationStatusFilter === 'running' && (!op || isLacking || inst.brokenUntilDay)) return false;
+            if (this.stationStatusFilter === 'vacant' && op) return false;
+            if (this.stationStatusFilter === 'lacking' && !isLacking) return false;
+            return true;
+        });
+
+        let cardsHtml = '';
+        if (filteredInstances.length === 0) {
+            cardsHtml = `
+                <div class="empty-filter-hint">
+                    <span style="font-size:24px">🔍</span>
+                    <div style="margin-top:4px">当前分类或状态筛选下无匹配仪器</div>
+                    <button class="btn-reset-filters" onclick="window.ui.resetStationFilters()">重置筛选条件</button>
+                </div>
+            `;
+        } else {
+            cardsHtml = filteredInstances.map(inst => {
+                const eq = GAME_DATA.equipmentList.find(x => x.id === inst.eqId);
+                if (!eq || eq.type !== 'station') return '';
+                const op = inst.operatorId ? e.members.find(m => m.id === inst.operatorId) : null;
+                const fitInfo = e.getStationFitInfo(op, eq.id);
+                const aptInfo = GAME_DATA.aptitudes[fitInfo.aptKey] || { name: '实验动手力', icon: '🔧' };
+                const opCPS = op ? e.getMemberAutoCPS(op) : 0;
+
+                const { amount: yieldDisplay } = e._calcYield(inst);
+
+                let mechanicHint = '';
+                let specialStatus = '';
+                if (eq.mechanic === 'switch') {
+                    const modeName = inst.switchMode === 'uvData' ? '日盲模式' : '可见光模式';
+                    mechanicHint = `🔄 <b>${modeName}</b> · ${eq.mechanicDesc}`;
+                } else if (eq.mechanic === 'tradeoff') {
+                    const modeName = inst.tradeoffMode === 'low' ? '低温高质量' : '高温高产';
+                    mechanicHint = `🌡️ <b>${modeName}</b> · ${eq.mechanicDesc}`;
+                } else if (eq.mechanic === 'batch') {
+                    mechanicHint = `📦 ${eq.mechanicDesc}`;
+                    if (inst.batchCountdown > 0) specialStatus = `<div class="station-batch-hint">⏳ 批次预热中... 还需 ${inst.batchCountdown} 天就绪</div>`;
+                } else if (eq.mechanic === 'rampup') {
+                    mechanicHint = `📈 ${eq.mechanicDesc}`;
+                    if (inst.rampupStreak > 0) specialStatus = `<div class="station-rampup-streak">🔥 连续运转 ${inst.rampupStreak} 天 · 连续产出加成 +${Math.round(inst.rampupStreak * 1.5)}%</div>`;
+                } else if (eq.mechanic === 'inject') {
+                    mechanicHint = `💉 ${eq.mechanicDesc}`;
+                } else if (eq.mechanic === 'coffee') {
+                    mechanicHint = `☕ ${eq.mechanicDesc}`;
+                } else {
+                    mechanicHint = `🔧 ${eq.mechanicDesc}`;
+                }
+
+                let modeBtn = '';
+                if (eq.mechanic === 'switch' || eq.mechanic === 'tradeoff') {
+                    modeBtn = `<button class="btn-station-sub" onclick="window.ui.switchMode('${inst.instanceId}')">🔄 切换模式</button>`;
+                }
+
+                let coffeeBtn = '';
+                if (eq.mechanic === 'coffee') {
+                    const beans = Math.floor(e.inventory.coffee || 0);
+                    coffeeBtn = `<button class="btn-station-sub btn-coffee" onclick="window.ui.activateCoffee()" ${beans < 3 ? 'disabled' : ''}>☕ 全组提神加速 (需3豆/余${beans})</button>`;
+                }
+
+                let injectBtn = '';
+                if (eq.mechanic === 'inject' && e.currentPaperProject) {
+                    const compute = Math.floor(e.inventory.compute || 0);
+                    injectBtn = `<button class="btn-station-sub btn-inject" onclick="window.ui.injectCompute()" ${compute < 10 ? 'disabled' : ''}>💉 算力注入论文 (需10点/余${compute})</button>`;
+                }
+
+                const upDetail = e.getStationUpgradeDetail(inst.instanceId);
+                const isMax = upDetail ? upDetail.isMax : inst.level >= eq.maxLevel;
+                const upgradeCost = upDetail ? upDetail.cost : eq.upgradeBaseCost * inst.level;
+                const canAfford = e.funding >= upgradeCost;
+                const upChancePercent = upDetail ? Math.round(upDetail.totalChance * 100) : 100;
+
+                const isLacking = inst.isLackingMaterials;
+                let liveClass = 'live-off';
+                let liveText = '⚪ 工位空置';
+                if (isLacking) {
+                    liveClass = 'live-waiting';
+                    liveText = '⚠️ 缺少原料待料中';
+                } else if (op) {
+                    liveClass = 'live-on';
+                    liveText = '🟢 正常运转中';
+                }
+
+                return `
+                    <div class="station-card ${isLacking ? 'station-card-lacking' : op ? 'station-card-running' : 'station-card-vacant'}" id="card-${inst.instanceId}">
+                        <!-- 顶部状态与级别栏 -->
+                        <div class="station-top-strip">
+                            <div class="station-live-badge ${liveClass}">
+                                <span class="live-dot"></span>
+                                <span class="live-text">${liveText}</span>
+                            </div>
+                            <div class="station-top-right-group">
+                                <div class="station-level-pill">Lv.${inst.level} <small>/${eq.maxLevel}</small></div>
+                                <button class="btn-station-sell" onclick="event.stopPropagation(); window.ui.sellStationPrompt('${inst.instanceId}')" title="二手设备处置转让（退还80%经费）">♻️ 转让</button>
+                            </div>
+                        </div>
+
+                        <!-- 主展示区：大图标 + 名称 + 产出值 (支持直接点击指导) -->
+                        <div class="station-main-row" onclick="window.ui.handleClickStation('${inst.instanceId}', event)" title="⚡ 导师点击直接指导该设备实验（产出+连击+特效）">
+                            <div class="station-icon-halo">
+                                <span class="station-huge-icon">${eq.icon}</span>
+                            </div>
+                            <div class="station-primary-info">
+                                <div class="station-big-name">${eq.name}</div>
+                                <div class="station-yield-pill">
+                                    <span class="syp-tag">连点流速:</span>
+                                    <span class="syp-num">+${yieldDisplay.toFixed(2)}</span>
+                                    <span class="syp-unit">${eq.productName} / 秒</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 上下游有机转化工艺配方 -->
+                        <div class="station-recipe-pill">
+                            <span class="srp-icon">⚗️</span>
+                            <span class="srp-text"><b>转化工艺:</b> ${eq.recipeDesc || '独立合成产出'}</span>
+                        </div>
+
+                        <!-- 机制说明 -->
+                        <div class="station-spec-banner">
+                            <span class="ssb-icon">💡</span>
+                            <span class="ssb-text">${mechanicHint}</span>
+                        </div>
+                        ${specialStatus}
+
+                        <!-- 专属操作员执勤插槽 (人岗匹配与专精共振高亮) -->
+                        <div class="station-op-slot ${op ? `op-slot-active ${fitInfo.badgeClass}` : 'op-slot-empty'}" onclick="window.ui.openAssign('${inst.instanceId}')" title="${fitInfo.fitDesc || '点击指派或更换操作员'}">
+                            <div class="op-slot-left">
+                                <span class="op-slot-avatar">${op ? op.avatar : '👤'}</span>
+                                <div class="op-slot-details">
+                                    <div class="op-slot-name-row">
+                                        <span class="op-slot-name">${op ? op.name : '<span style="color:#f59e0b">未指派操作员（点击指派 ➕）</span>'}</span>
+                                        ${op ? `
+                                            <span class="op-apt-badge ${fitInfo.badgeClass}">${fitInfo.aptIcon} ${fitInfo.grade} · ${fitInfo.fitTag}</span>
+                                            <span class="op-cps-badge" title="操作员持续自动连点做实验">🤖 连点 ${opCPS.toFixed(1)} 击/秒</span>
+                                            ${fitInfo.hasTraitSynergy ? `<span class="op-trait-synergy" title="专属特质协同">🔥 特质×${fitInfo.traitMult.toFixed(1)}</span>` : ''}
+                                        ` : ''}
+                                    </div>
+                                    <div class="op-slot-meta">${op ? `${op.grade} · 连点效能 ${fitInfo.totalFitMult.toFixed(2)}x · 自动代打实验中` : `核心匹配资质: ${aptInfo.icon} ${aptInfo.name}`}</div>
+                                </div>
+                            </div>
+                            <button class="btn-op-action" onclick="event.stopPropagation(); window.ui.openAssign('${inst.instanceId}')">
+                                ${op ? '更换 ✏️' : '指派 ➕'}
+                            </button>
+                        </div>
+
+                        <!-- 底部操作与升级栏 -->
+                        <div class="station-footer-actions">
+                            ${modeBtn}
+                            ${coffeeBtn}
+                            ${injectBtn}
+                            ${!isMax ? `
+                                <button class="btn-station-upgrade" onclick="window.ui.upgrade('${inst.instanceId}')" ${!canAfford ? 'disabled' : ''} title="升级成功率: ${upChancePercent}% (含保底幸运值)">
+                                    ⬆️ 强化 Lv.${inst.level+1} (${upgradeCost}万 · ${upChancePercent}%)
+                                </button>
+                            ` : '<span class="station-max-tag">👑 已升至最高阶</span>'}
+                            ${inst.upgradeLuck > 0 && !isMax ? `
+                                <div style="font-size:10px;color:#fbbf24;margin-top:2px;font-weight:600">💡 调试幸运保底: +${Math.round(inst.upgradeLuck * 100)}% 成功率</div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        c.innerHTML = consoleHtml + recycleHtml + controlHubHtml + `<div class="stations-grid">${cardsHtml}</div>`;
     }
 
     // ==================== 产学研多品类转化回收与一键清仓 ====================
@@ -1008,10 +1086,33 @@ class UIController {
         const c = document.getElementById('shop-container');
         if (!c) return;
 
+        this.shopCategoryFilter = this.shopCategoryFilter || 'all';
+
+        // 商城分类胶囊
+        const shopCatPills = (GAME_DATA.equipmentCategories || []).map(cat => {
+            let count = 0;
+            if (cat.id === 'all') {
+                count = GAME_DATA.equipmentList.filter(eq => e.isEquipmentVisibleInShop(eq)).length;
+            } else {
+                count = GAME_DATA.equipmentList.filter(eq => eq.category === cat.id && e.isEquipmentVisibleInShop(eq)).length;
+            }
+            const isSel = this.shopCategoryFilter === cat.id;
+            return `
+                <button class="btn-eq-cat-pill ${isSel ? 'active' : ''}" onclick="window.ui.setShopCategoryFilter('${cat.id}')">
+                    <span class="ecp-icon">${cat.icon}</span>
+                    <span class="ecp-name">${cat.name}</span>
+                    <span class="ecp-count">(${count})</span>
+                </button>
+            `;
+        }).join('');
+
         let html = `
             <div class="section-title">
                 🛒 仪器设备商城
                 <small style="font-size:11px;color:var(--text2);font-weight:400;margin-left:8px">（随课题组经费增长与产业链拓展逐步勘探解锁尖端仪器）</small>
+            </div>
+            <div class="eq-cat-pills-row" style="margin-bottom:12px">
+                ${shopCatPills}
             </div>
         `;
 
@@ -1021,17 +1122,22 @@ class UIController {
         for (let eq of GAME_DATA.equipmentList) {
             const isVisible = e.isEquipmentVisibleInShop(eq);
             if (isVisible) {
+                if (this.shopCategoryFilter !== 'all' && eq.category !== this.shopCategoryFilter) {
+                    continue;
+                }
                 visibleCount++;
                 const locked = eq.stageReq > e.labStage;
                 const canAfford = e.funding >= eq.price;
                 const mechanic = eq.mechanic ? `<div class="shop-mechanic">${eq.mechanicDesc}</div>` : '';
                 const ownedCount = e.stationInstances.filter(s => s.eqId === eq.id).length;
+                const catObj = (GAME_DATA.equipmentCategories || []).find(x => x.id === eq.category) || { name: '专业仪器', icon: '🔬' };
 
                 html += `<div class="shop-card ${locked ? 'shop-locked' : ''}">
                     <div class="shop-icon">${eq.icon}</div>
                     <div class="shop-info">
                         <div class="shop-name-row">
                             <span class="shop-name">${eq.name}</span>
+                            <span class="mcb-badge" style="font-size:10px">${catObj.icon} ${catObj.name}</span>
                             ${ownedCount > 0 ? `<span class="shop-owned-tag">已拥有 ${ownedCount} 台</span>` : ''}
                         </div>
                         ${mechanic}
@@ -1048,7 +1154,17 @@ class UIController {
             }
         }
 
-        if (nextLockedTeaser) {
+        if (visibleCount === 0) {
+            html += `
+                <div class="empty-filter-hint">
+                    <span style="font-size:24px">🔍</span>
+                    <div style="margin-top:4px">当前分类下暂无已探知的仪器</div>
+                    <button class="btn-reset-filters" onclick="window.ui.setShopCategoryFilter('all')">查看全部仪器</button>
+                </div>
+            `;
+        }
+
+        if (nextLockedTeaser && (this.shopCategoryFilter === 'all' || nextLockedTeaser.category === this.shopCategoryFilter)) {
             const revealNeedFunding = (nextLockedTeaser.price * 0.4).toFixed(1);
             html += `
                 <div class="shop-card shop-mystery-teaser">
@@ -1230,6 +1346,123 @@ class UIController {
         this.toast('🚫 已取消该工位操作员');
         this.renderStations();
         this.renderHR();
+        if (document.getElementById('modal-eq-matrix') && document.getElementById('modal-eq-matrix').style.display !== 'none') {
+            this.renderEqMatrix();
+        }
+    }
+
+    // ==================== 仪器分类与筛选控制 ====================
+    setStationCategoryFilter(catId) {
+        if (window.soundEngine) window.soundEngine.playClick();
+        this.stationCategoryFilter = catId;
+        this.renderStations();
+    }
+
+    setStationStatusFilter(status) {
+        if (window.soundEngine) window.soundEngine.playClick();
+        this.stationStatusFilter = status;
+        this.renderStations();
+    }
+
+    resetStationFilters() {
+        this.stationCategoryFilter = 'all';
+        this.stationStatusFilter = 'all';
+        this.renderStations();
+    }
+
+    setShopCategoryFilter(catId) {
+        if (window.soundEngine) window.soundEngine.playClick();
+        this.shopCategoryFilter = catId;
+        this.renderShop();
+    }
+
+    // ==================== 仪器集控大盘弹窗 ====================
+    openEqMatrixModal() {
+        if (window.soundEngine) window.soundEngine.playClick();
+        this.renderEqMatrix();
+        this.openModal('modal-eq-matrix');
+    }
+
+    renderEqMatrix() {
+        const e = window.gameEngine;
+        const box = document.getElementById('eq-matrix-body');
+        if (!box) return;
+
+        const totalCount = e.stationInstances.length;
+        const runningCount = e.stationInstances.filter(s => s.operatorId && !s.brokenUntilDay && !s.isLackingMaterials).length;
+        const vacantCount = e.stationInstances.filter(s => !s.operatorId).length;
+
+        // 统计各大类设备
+        const categories = (GAME_DATA.equipmentCategories || []).filter(c => c.id !== 'all');
+        let catBlocksHtml = '';
+
+        for (let cat of categories) {
+            const insts = e.stationInstances.filter(s => {
+                const eq = GAME_DATA.equipmentList.find(x => x.id === s.eqId);
+                return eq && eq.category === cat.id;
+            });
+            if (insts.length === 0) continue;
+
+            const rows = insts.map(s => {
+                const eq = GAME_DATA.equipmentList.find(x => x.id === s.eqId);
+                const op = s.operatorId ? e.members.find(m => m.id === s.operatorId) : null;
+                const { amount: yieldVal } = e._calcYield(s);
+                return `
+                    <div class="mcb-item-row">
+                        <div class="mcb-item-left">
+                            <span style="font-size:18px">${eq.icon}</span>
+                            <div>
+                                <span class="mcb-item-name">${eq.name} <small style="color:#38bdf8">Lv.${s.level}</small></span>
+                                <div class="mcb-item-op">${op ? `👤 ${op.name} (${op.grade})` : '<span style="color:#f59e0b">⚪ 空置待命</span>'}</div>
+                            </div>
+                        </div>
+                        <div style="text-align:right">
+                            <span class="mcb-item-yield">+${yieldVal.toFixed(2)} ${eq.productName}/s</span>
+                            <div style="margin-top:4px">
+                                <button class="btn-ric-act" onclick="window.ui.closeModal('modal-eq-matrix'); window.ui.openAssign('${s.instanceId}')">${op ? '换人 ✏️' : '指派 ➕'}</button>
+                                <button class="btn-ric-act btn-ric-all" onclick="window.ui.closeModal('modal-eq-matrix'); window.ui.sellStationPrompt('${s.instanceId}')">转让 ♻️</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            catBlocksHtml += `
+                <div class="matrix-cat-block">
+                    <div class="mcb-header">
+                        <span class="mcb-title">${cat.icon} ${cat.name} (${insts.length} 台)</span>
+                        <span class="mcb-badge">${cat.desc}</span>
+                    </div>
+                    <div class="mcb-items-list">
+                        ${rows}
+                    </div>
+                </div>
+            `;
+        }
+
+        if (!catBlocksHtml) {
+            catBlocksHtml = '<div class="empty-hint">当前实验室尚无任何部署设备，快去【设备商城】添置！</div>';
+        }
+
+        box.innerHTML = `
+            <div class="matrix-summary-hero">
+                <div class="msh-card">
+                    <div class="msh-val">${totalCount}</div>
+                    <div class="msh-label">已部署仪器</div>
+                </div>
+                <div class="msh-card">
+                    <div class="msh-val" style="color:#4ade80">${runningCount}</div>
+                    <div class="msh-label">🟢 运转中</div>
+                </div>
+                <div class="msh-card">
+                    <div class="msh-val" style="color:#fbbf24">${vacantCount}</div>
+                    <div class="msh-label">⚪ 空置待命</div>
+                </div>
+            </div>
+            <div class="matrix-cats-container">
+                ${catBlocksHtml}
+            </div>
+        `;
     }
 
     // ==================== 导师科研指导升级 ====================
