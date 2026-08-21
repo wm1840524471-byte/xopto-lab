@@ -2942,4 +2942,209 @@ small{font-size:11px;color:var(--text2)}
     50% { transform: scale(1.08); filter: drop-shadow(0 0 16px rgba(74, 222, 128, 0.8)); }
 }
 
+/* ==================== 实验室全景作业看板 ==================== */
+.lab-live-action-deck {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.9));
+    border: 1.5px solid rgba(56, 189, 248, 0.35);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+.lab-live-action-deck::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, #38bdf8, #a855f7, #4ade80);
+}
+
+.llad-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.llad-title {
+    font-size: 12px;
+    font-weight: 800;
+    color: #38bdf8;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.llad-stat {
+    font-size: 11px;
+    color: var(--text2);
+}
+
+.llad-stat b {
+    color: #4ade80;
+}
+
+.llad-characters-row {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 4px 2px 8px 2px;
+    -webkit-overflow-scrolling: touch;
+}
+
+.llad-char-item {
+    background: rgba(30, 41, 59, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 6px 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    position: relative;
+    transition: transform 0.15s;
+}
+
+.llad-char-item:hover {
+    transform: translateY(-2px);
+    border-color: #38bdf8;
+}
+
+.llad-avatar-box {
+    font-size: 20px;
+    position: relative;
+}
+
+.llad-speech-bubble {
+    font-size: 10px;
+    color: #e2e8f0;
+    max-width: 140px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.llad-speech-bubble b {
+    color: #38bdf8;
+}
+
+.llad-char-tag {
+    font-size: 9px;
+    padding: 1px 5px;
+    border-radius: 8px;
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    font-weight: 700;
+}
+
+/* ==================== 工位卡片内超生动小人工作场景 ==================== */
+.station-op-diorama {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 8px 10px;
+    margin: 8px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+}
+
+.sod-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+}
+
+.sod-avatar-container {
+    width: 38px;
+    height: 38px;
+    background: rgba(30, 41, 59, 0.9);
+    border: 1.5px solid rgba(56, 189, 248, 0.4);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    position: relative;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+    flex-shrink: 0;
+}
+
+.sod-speech {
+    font-size: 11px;
+    line-height: 1.35;
+    color: #f1f5f9;
+}
+
+.sod-action-name {
+    font-weight: 700;
+    color: #38bdf8;
+    margin-bottom: 2px;
+}
+
+.sod-action-status {
+    font-size: 10px;
+    color: #94a3b8;
+}
+
+.sod-action-status b {
+    color: #4ade80;
+}
+
+/* 卡片内部原位上浮飘字 */
+@keyframes inCardFloatUp {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, 0) scale(0.6);
+    }
+    15% {
+        opacity: 1;
+        transform: translate(-50%, -8px) scale(1.1);
+    }
+    75% {
+        opacity: 0.95;
+        transform: translate(-50%, -28px) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -46px) scale(0.8);
+    }
+}
+
+.card-floating-yield {
+    position: absolute;
+    top: 32%;
+    left: 45%;
+    transform: translate(-50%, 0);
+    pointer-events: none;
+    font-size: 12px;
+    font-weight: 800;
+    font-family: var(--font-mono, monospace);
+    color: #4ade80;
+    background: rgba(15, 23, 42, 0.92);
+    border: 1px solid rgba(74, 222, 128, 0.5);
+    box-shadow: 0 0 12px rgba(74, 222, 128, 0.4);
+    padding: 2px 8px;
+    border-radius: 10px;
+    z-index: 50;
+    animation: inCardFloatUp 1.1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    white-space: nowrap;
+}
+
+.card-floating-yield.crit {
+    color: #fbbf24;
+    border-color: #f59e0b;
+    box-shadow: 0 0 16px rgba(245, 158, 11, 0.6);
+    font-size: 13px;
+}
+
 

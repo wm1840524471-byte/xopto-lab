@@ -648,16 +648,41 @@ class UIController {
                         </div>
                         ${specialStatus}
 
-                        <!-- 专属操作员执勤插槽 (人岗匹配与专精共振高亮) -->
+                        <!-- 专属操作员执勤微场景与插槽 (动画小人 + 实时语录 + 人岗匹配高亮) -->
                         ${(() => {
                             let avatarAnimClass = 'avatar-anim-empty';
+                            let actionSpeech = '未指派操作员（点击指派 ➕）';
                             if (op) {
-                                if (eq.category === 'prep' || eq.id === 'fume_hood' || eq.id === 'glovebox_spin') avatarAnimClass = 'avatar-anim-pipette';
-                                else if (eq.category === 'compute' || eq.id === 'xeon_server' || eq.id === 'hpc_gpu_cluster') avatarAnimClass = 'avatar-anim-coding';
-                                else if (eq.category === 'service' || eq.id === 'coffee_machine') avatarAnimClass = 'avatar-anim-coffee';
-                                else avatarAnimClass = 'avatar-anim-scanning';
+                                if (eq.category === 'prep' || eq.id === 'fume_hood' || eq.id === 'glovebox_spin') {
+                                    avatarAnimClass = 'avatar-anim-pipette';
+                                    actionSpeech = isLacking ? '⚠️ 缺少原料，等待原料供给中...' : `正在精密旋涂与配液中 · <b>+${yieldDisplay.toFixed(2)} ${eq.productName}/s</b>`;
+                                } else if (eq.category === 'compute' || eq.id === 'xeon_server' || eq.id === 'hpc_gpu_cluster') {
+                                    avatarAnimClass = 'avatar-anim-coding';
+                                    actionSpeech = '正在运行超胞 DFT 态密度计算 · <b>+1 💻 算力/s</b>';
+                                } else if (eq.category === 'service' || eq.id === 'coffee_machine') {
+                                    avatarAnimClass = 'avatar-anim-coffee';
+                                    actionSpeech = '正在萃取香浓意式手冲 · <b>+1 ☕ 咖啡豆/s</b>';
+                                } else {
+                                    avatarAnimClass = 'avatar-anim-scanning';
+                                    actionSpeech = isLacking ? '⚠️ 缺少前置样品进行测试...' : `正在进行高灵敏光学扫描 · <b>+${yieldDisplay.toFixed(2)} ${eq.productName}/s</b>`;
+                                }
                             }
                             return `
+                                <div class="station-op-diorama" onclick="window.ui.openAssign('${inst.instanceId}')" title="${fitInfo.fitDesc || '点击指派或更换操作员'}">
+                                    <div class="sod-left">
+                                        <div class="sod-avatar-container">
+                                            <span class="${avatarAnimClass}">${op ? op.avatar : '🪑'}</span>
+                                        </div>
+                                        <div class="sod-speech">
+                                            <div class="sod-action-name">${op ? `${op.name} ${fitInfo.aptIcon}` : '<span style="color:#f59e0b">🪑 工位空置</span>'}</div>
+                                            <div class="sod-action-status">${actionSpeech}</div>
+                                        </div>
+                                    </div>
+                                    <button class="btn-op-action" onclick="event.stopPropagation(); window.ui.openAssign('${inst.instanceId}')">
+                                        ${op ? '换人 ✏️' : '指派 ➕'}
+                                    </button>
+                                </div>
+
                                 <div class="station-op-slot ${op ? `op-slot-active ${fitInfo.badgeClass}` : 'op-slot-empty'}" onclick="window.ui.openAssign('${inst.instanceId}')" title="${fitInfo.fitDesc || '点击指派或更换操作员'}">
                                     <div class="op-slot-left">
                                         <span class="op-slot-avatar ${avatarAnimClass}">${op ? op.avatar : '👤'}</span>
@@ -699,7 +724,49 @@ class UIController {
             }).join('');
         }
 
-        c.innerHTML = consoleHtml + recycleHtml + controlHubHtml + `<div class="stations-grid">${cardsHtml}</div>`;
+        // 全景作战看板
+        let liveDeckHtml = '';
+        if (e.stationInstances.length > 0) {
+            const activeTeamMembers = e.members.filter(m => e.stationInstances.some(s => s.operatorId === m.id));
+            const charBadges = activeTeamMembers.map(m => {
+                const s = e.stationInstances.find(x => x.operatorId === m.id);
+                const eq = s ? GAME_DATA.equipmentList.find(x => x.id === s.eqId) : null;
+                const mCPS = e.getMemberAutoCPS(m);
+                let speech = '专注实验中...';
+                if (eq) {
+                    if (eq.id === 'fume_hood') speech = '🧪 配制前驱液';
+                    else if (eq.id === 'glovebox_spin') speech = '🧤 旋涂制膜中';
+                    else if (eq.category === 'compute') speech = '💻 计算DFT中';
+                    else if (eq.category === 'service') speech = '☕ 萃取手冲中';
+                    else speech = `🔬 测定${eq.productName}`;
+                }
+                return `
+                    <div class="llad-char-item" onclick="window.ui.openAssign('${s.instanceId}')" title="点击查看 ${m.name} 的岗位匹配与技能">
+                        <div class="llad-avatar-box">
+                            <span class="avatar-anim-pipette">${m.avatar}</span>
+                        </div>
+                        <div>
+                            <div style="font-weight:700;font-size:11px;color:#f8fafc">${m.name} <span class="llad-char-tag">${mCPS.toFixed(1)}/s</span></div>
+                            <div class="llad-speech-bubble"><b>${eq ? eq.name : '工位'}</b>: ${speech}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            liveDeckHtml = `
+                <div class="lab-live-action-deck">
+                    <div class="llad-header">
+                        <span class="llad-title">👨‍🔬 课题组全景实验作业实况</span>
+                        <span class="llad-stat">⚡ 自动科研流速: <b>+${autoPower.toFixed(2)}</b>/秒 · <b>${runningCount}</b> 台满载运转</span>
+                    </div>
+                    <div class="llad-characters-row">
+                        ${charBadges || '<div style="font-size:11px;color:var(--text2);padding:4px 0">⚪ 暂无在岗操作员（在下方设备卡片指派同门上岗开启自动连点）</div>'}
+                    </div>
+                </div>
+            `;
+        }
+
+        c.innerHTML = consoleHtml + liveDeckHtml + recycleHtml + controlHubHtml + `<div class="stations-grid">${cardsHtml}</div>`;
     }
 
     // ==================== 产学研多品类转化回收与一键清仓 ====================
@@ -2407,34 +2474,36 @@ class UIController {
         }
 
         this.spawnClickParticle(x, y, text, res.isCrit);
+        this.spawnStationYieldFloat(instId, text, res.isCrit);
         this.updateClickConsole();
         this.updateRecyclePanel();
         this.renderResourcePanel();
         if (this.currentTab === 'paper') this.updatePaperProgress();
     }
 
-    // 运行中的工位周期性自动冒泡粒子特效（让玩家挂机时看着各仪器设备不断冒泡产出）
-    spawnStationAutoBubble(instId, text, isCrit = false) {
+    // 运行中的工位原位在产飘字粒子特效（直接作为卡片内部子元素上浮，视觉极其生动）
+    spawnStationYieldFloat(instId, text, isCrit = false) {
         const cardEl = document.getElementById(`card-${instId}`);
         if (!cardEl) return;
         const rect = cardEl.getBoundingClientRect();
         if (rect.bottom < 0 || rect.top > window.innerHeight) return; // 视口外不生成DOM
 
-        const x = rect.left + rect.width * 0.35 + (Math.random() - 0.5) * 36;
-        const y = rect.top + 45 + (Math.random() - 0.5) * 16;
-
         const particle = document.createElement('div');
-        particle.className = `station-float-particle ${isCrit ? 'crit' : ''}`;
+        particle.className = `card-floating-yield ${isCrit ? 'crit' : ''}`;
         particle.innerText = text;
-        particle.style.left = `${x}px`;
-        particle.style.top = `${y}px`;
+        particle.style.left = `${36 + (Math.random() - 0.5) * 20}%`;
+        particle.style.top = `${28 + (Math.random() - 0.5) * 10}%`;
 
-        document.body.appendChild(particle);
+        cardEl.appendChild(particle);
         setTimeout(() => {
             if (particle && particle.parentNode) {
                 particle.parentNode.removeChild(particle);
             }
-        }, 1200);
+        }, 1100);
+    }
+
+    spawnStationAutoBubble(instId, text, isCrit = false) {
+        this.spawnStationYieldFloat(instId, text, isCrit);
     }
 
     // 动态生成点击上浮粒子特效

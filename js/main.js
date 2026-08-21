@@ -43,20 +43,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 uiAccumulator = 0;
             }
 
-            // 设备工位周期性自动冒泡粒子特效（每 1.3 秒循环，挂机时视觉丰富生动）
+            // 设备工位在产高频飘字特效（每 0.8 秒触发运转仪器原位冒泡飞字，全场科研氛围拉满）
             stationBubbleAccumulator += clampedDelta;
-            if (stationBubbleAccumulator >= 1.3) {
+            if (stationBubbleAccumulator >= 0.8) {
                 if (window.ui.currentTab === 'stations') {
                     const e = window.gameEngine;
                     const runningStations = e.stationInstances.filter(s => s.operatorId && !s.brokenUntilDay && !s.isLackingMaterials);
                     if (runningStations.length > 0) {
-                        // 每次挑 1~2 台正在运转的仪器冒泡
-                        const sample = runningStations.sort(() => 0.5 - Math.random()).slice(0, 2);
-                        for (let inst of sample) {
+                        for (let inst of runningStations) {
                             const eq = GAME_DATA.equipmentList.find(x => x.id === inst.eqId);
-                            if (eq) {
-                                const yieldAmt = (eq.baseYield * (1 + (inst.level - 1) * 0.25) * 0.45).toFixed(1);
-                                window.ui.spawnStationAutoBubble(inst.instanceId, `+${yieldAmt} ${eq.icon}`);
+                            if (eq && Math.random() < 0.75) {
+                                const { amount: yieldAmt } = e._calcYield(inst);
+                                if (yieldAmt > 0) {
+                                    window.ui.spawnStationYieldFloat(inst.instanceId, `+${yieldAmt.toFixed(2)} ${eq.icon}`);
+                                }
                             }
                         }
                     }
