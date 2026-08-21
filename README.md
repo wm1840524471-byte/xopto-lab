@@ -8,7 +8,7 @@
 
 ## 🎮 在线试玩 (GitHub Pages)
 
-👉 **立即体验**：`https://<your-username>.github.io/<repo-name>/` *(开启 GitHub Pages 后即可访问)*
+👉 **立即体验**：[https://wm1840524471-byte.github.io/xopto-lab/](https://wm1840524471-byte.github.io/xopto-lab/) *(开启 GitHub Pages 后即可访问)*
 
 - 📱 **全平台自适应**：完美兼容 iPhone、Android 手机浏览器、微信内置浏览器与 PC 桌面端；
 - ⚡ **纯原生轻量**：零第三方庞大依赖，首屏体积小于 200KB，秒开即玩；
