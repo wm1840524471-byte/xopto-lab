@@ -645,8 +645,10 @@ class GameEngine {
         const eq = GAME_DATA.equipmentList.find(e => e.id === inst.eqId);
         if (!eq) return { error: '设备数据异常！' };
 
-        // 计算折旧退款金额 (原价80% + 历史升级投入80%)
-        let totalInvested = eq.price;
+        // 计算折旧退款金额 (购入阶梯动态价80% + 历史升级投入80%)
+        const count = this.stationInstances.filter(s => s.eqId === inst.eqId).length;
+        const purchaseCostTier = eq.price * Math.pow(1.15, Math.max(0, count - 1));
+        let totalInvested = purchaseCostTier;
         if (inst.level > 1 && eq.upgradeBaseCost) {
             for (let lvl = 1; lvl < inst.level; lvl++) {
                 totalInvested += eq.upgradeBaseCost * lvl;

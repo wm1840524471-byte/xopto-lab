@@ -594,25 +594,36 @@ class UIController {
                         ${specialStatus}
 
                         <!-- 专属操作员执勤插槽 (人岗匹配与专精共振高亮) -->
-                        <div class="station-op-slot ${op ? `op-slot-active ${fitInfo.badgeClass}` : 'op-slot-empty'}" onclick="window.ui.openAssign('${inst.instanceId}')" title="${fitInfo.fitDesc || '点击指派或更换操作员'}">
-                            <div class="op-slot-left">
-                                <span class="op-slot-avatar">${op ? op.avatar : '👤'}</span>
-                                <div class="op-slot-details">
-                                    <div class="op-slot-name-row">
-                                        <span class="op-slot-name">${op ? op.name : '<span style="color:#f59e0b">未指派操作员（点击指派 ➕）</span>'}</span>
-                                        ${op ? `
-                                            <span class="op-apt-badge ${fitInfo.badgeClass}">${fitInfo.aptIcon} ${fitInfo.grade} · ${fitInfo.fitTag}</span>
-                                            <span class="op-cps-badge" title="操作员持续自动连点做实验">🤖 连点 ${opCPS.toFixed(1)} 击/秒</span>
-                                            ${fitInfo.hasTraitSynergy ? `<span class="op-trait-synergy" title="专属特质协同">🔥 特质×${fitInfo.traitMult.toFixed(1)}</span>` : ''}
-                                        ` : ''}
+                        ${(() => {
+                            let avatarAnimClass = 'avatar-anim-empty';
+                            if (op) {
+                                if (eq.category === 'prep' || eq.id === 'fume_hood' || eq.id === 'glovebox_spin') avatarAnimClass = 'avatar-anim-pipette';
+                                else if (eq.category === 'compute' || eq.id === 'xeon_server' || eq.id === 'hpc_gpu_cluster') avatarAnimClass = 'avatar-anim-coding';
+                                else if (eq.category === 'service' || eq.id === 'coffee_machine') avatarAnimClass = 'avatar-anim-coffee';
+                                else avatarAnimClass = 'avatar-anim-scanning';
+                            }
+                            return `
+                                <div class="station-op-slot ${op ? `op-slot-active ${fitInfo.badgeClass}` : 'op-slot-empty'}" onclick="window.ui.openAssign('${inst.instanceId}')" title="${fitInfo.fitDesc || '点击指派或更换操作员'}">
+                                    <div class="op-slot-left">
+                                        <span class="op-slot-avatar ${avatarAnimClass}">${op ? op.avatar : '👤'}</span>
+                                        <div class="op-slot-details">
+                                            <div class="op-slot-name-row">
+                                                <span class="op-slot-name">${op ? op.name : '<span style="color:#f59e0b">未指派操作员（点击指派 ➕）</span>'}</span>
+                                                ${op ? `
+                                                    <span class="op-apt-badge ${fitInfo.badgeClass}">${fitInfo.aptIcon} ${fitInfo.grade} · ${fitInfo.fitTag}</span>
+                                                    <span class="op-cps-badge" title="操作员持续自动连点做实验">🤖 连点 ${opCPS.toFixed(1)} 击/秒</span>
+                                                    ${fitInfo.hasTraitSynergy ? `<span class="op-trait-synergy" title="专属特质协同">🔥 特质×${fitInfo.traitMult.toFixed(1)}</span>` : ''}
+                                                ` : ''}
+                                            </div>
+                                            <div class="op-slot-meta">${op ? `${op.grade} · 连点效能 ${fitInfo.totalFitMult.toFixed(2)}x · 自动代打实验中` : `核心匹配资质: ${aptInfo.icon} ${aptInfo.name}`}</div>
+                                        </div>
                                     </div>
-                                    <div class="op-slot-meta">${op ? `${op.grade} · 连点效能 ${fitInfo.totalFitMult.toFixed(2)}x · 自动代打实验中` : `核心匹配资质: ${aptInfo.icon} ${aptInfo.name}`}</div>
+                                    <button class="btn-op-action" onclick="event.stopPropagation(); window.ui.openAssign('${inst.instanceId}')">
+                                        ${op ? '更换 ✏️' : '指派 ➕'}
+                                    </button>
                                 </div>
-                            </div>
-                            <button class="btn-op-action" onclick="event.stopPropagation(); window.ui.openAssign('${inst.instanceId}')">
-                                ${op ? '更换 ✏️' : '指派 ➕'}
-                            </button>
-                        </div>
+                            `;
+                        })()}
 
                         <!-- 底部操作与升级栏 -->
                         <div class="station-footer-actions">

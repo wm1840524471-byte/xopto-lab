@@ -2794,4 +2794,105 @@ small{font-size:11px;color:var(--text2)}
     background: rgba(56, 189, 248, 0.1);
 }
 
+/* ==================== 视觉表现层：在产飘字与动画小人工作态 ==================== */
+@keyframes floatUpGlow {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, 0) scale(0.7);
+    }
+    20% {
+        opacity: 1;
+        transform: translate(-50%, -10px) scale(1.1);
+    }
+    80% {
+        opacity: 0.9;
+        transform: translate(-50%, -30px) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -45px) scale(0.85);
+    }
+}
+
+.floating-yield-particle {
+    position: absolute;
+    top: 35%;
+    left: 50%;
+    transform: translate(-50%, 0);
+    pointer-events: none;
+    font-weight: 800;
+    font-size: 13px;
+    font-family: var(--font-mono, monospace);
+    color: #4ade80;
+    text-shadow: 0 0 10px rgba(74, 222, 128, 0.8), 0 2px 4px rgba(0, 0, 0, 0.8);
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(74, 222, 128, 0.4);
+    padding: 2px 8px;
+    border-radius: 12px;
+    z-index: 40;
+    animation: floatUpGlow 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    white-space: nowrap;
+}
+
+@keyframes avatarPipette {
+    0%, 100% { transform: rotate(0deg) translateY(0); }
+    25% { transform: rotate(-8deg) translateY(-2px); }
+    75% { transform: rotate(8deg) translateY(1px); }
+}
+
+@keyframes avatarCoding {
+    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 4px rgba(56, 189, 248, 0.6)); }
+    50% { transform: scale(1.12); filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.9)); }
+}
+
+@keyframes avatarScan {
+    0%, 100% { transform: scale(1) translateY(0); filter: drop-shadow(0 0 4px rgba(168, 85, 247, 0.5)); }
+    50% { transform: scale(1.08) translateY(-2px); filter: drop-shadow(0 0 12px rgba(168, 85, 247, 0.9)); }
+}
+
+@keyframes avatarCoffee {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.7)); }
+}
+
+@keyframes avatarEmptyPulse {
+    0%, 100% { opacity: 0.6; transform: scale(0.95); }
+    50% { opacity: 1; transform: scale(1.05); }
+}
+
+.avatar-anim-pipette {
+    display: inline-block;
+    animation: avatarPipette 2s ease-in-out infinite;
+}
+
+.avatar-anim-coding {
+    display: inline-block;
+    animation: avatarCoding 1.5s ease-in-out infinite;
+}
+
+.avatar-anim-scanning {
+    display: inline-block;
+    animation: avatarScan 1.8s ease-in-out infinite;
+}
+
+.avatar-anim-coffee {
+    display: inline-block;
+    animation: avatarCoffee 2.2s ease-in-out infinite;
+}
+
+.avatar-anim-empty {
+    display: inline-block;
+    animation: avatarEmptyPulse 2s ease-in-out infinite;
+}
+
+.station-card.station-card-running .station-huge-icon {
+    display: inline-block;
+    animation: machinePulse 3s ease-in-out infinite;
+}
+
+@keyframes machinePulse {
+    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 6px rgba(74, 222, 128, 0.4)); }
+    50% { transform: scale(1.08); filter: drop-shadow(0 0 16px rgba(74, 222, 128, 0.8)); }
+}
+
 
