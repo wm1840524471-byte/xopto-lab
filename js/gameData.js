@@ -1060,6 +1060,7 @@ const GAME_DATA = {
 
     // ==================== 口令码礼包 ====================
     secretCodes: {
+        'SZF': { name: '全前置解锁令', unlockAll: true, desc: '解锁全部具有前置条件的选项：全仪器商城勘探、全部倍速、夏令营与天骄引荐条件！' },
         'WANGMENG666': { name: '创世大当家专项基金', funding: 1000, coffee: 99, desc: '经费 1000 万 + 99 份咖啡豆！' },
         'XOPTO888': { name: '高纯试剂原料包', films: 30, spectra: 30, uvData: 30, desc: '薄膜、光谱与紫外数据各 30 份！' },
         'NATURE2026': { name: 'Reviewer #2 绝杀令', instantAccept: true, desc: '下篇论文直接免审 100% 录用！' },

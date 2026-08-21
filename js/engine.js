@@ -17,6 +17,7 @@ class GameEngine {
         this.rosterAvailable = [...GAME_DATA.labRosterPool];
         this.activeCandidates = []; // 当前待面试候选人简历
         this.unlockedLegendary = [];
+        this.allUnlocked = false; // 全前置解锁令标志
         this.stationInstances = []; // 初始无设备，纯手动白手起家
 
         this.inventory = { precursors: 0, films: 0, xrdData: 0, absData: 0, uvData: 0, spectra: 0, compute: 0, devices: 0, imaging: 0, coffee: 0 };
@@ -225,6 +226,8 @@ class GameEngine {
 
     // 商城设备渐进显露判定（达到一定经费或前置产业链拥有后方可看到与购买）
     isEquipmentVisibleInShop(eq) {
+        if (this.allUnlocked) return true;
+
         // 1. 通风橱与咖啡机：基础设备始终在商城可见
         if (eq.id === 'fume_hood' || eq.id === 'coffee_machine') return true;
 
@@ -265,6 +268,14 @@ class GameEngine {
 
     // ==================== 倍速解锁与查询 ====================
     getSpeedUnlockInfo() {
+        if (this.allUnlocked) {
+            return [
+                { speed: 1, label: '1x 正常', desc: '默认开放 (2.5s/天)', unlocked: true },
+                { speed: 2, label: '2x 专注', desc: '全前置解锁令开放 (1.25s/天)', unlocked: true },
+                { speed: 4, label: '4x 通宵', desc: '全前置解锁令开放 (0.625s/天)', unlocked: true },
+                { speed: 8, label: '8x 极速', desc: '全前置解锁令开放 (0.31s/天)', unlocked: true }
+            ];
+        }
         return [
             { speed: 1, label: '1x 正常', desc: '默认开放 (2.5s/天)', unlocked: true },
             { speed: 2, label: '2x 专注', desc: '发表首篇论文或评级达E级解锁 (1.25s/天)', 
@@ -1025,6 +1036,7 @@ class GameEngine {
 
     // 检查博士天骄是否达成全部学术条件
     isLegendaryUnlocked(legendaryId) {
+        if (this.allUnlocked) return true;
         const leg = GAME_DATA.legendaryMembers.find(m => m.id === legendaryId);
         if (!leg) return false;
         if (!leg.unlockConditions || leg.unlockConditions.length === 0) return true;
@@ -1897,6 +1909,15 @@ class GameEngine {
         if (gift.uvData) this.inventory.uvData += gift.uvData;
         if (gift.compute) this.inventory.compute += gift.compute;
         if (gift.instantAccept) this.instantAcceptReady = true;
+        if (gift.unlockAll) {
+            this.allUnlocked = true;
+            for (let leg of GAME_DATA.legendaryMembers) {
+                if (!this.unlockedLegendary.includes(leg.id)) {
+                    this.unlockedLegendary.push(leg.id);
+                }
+            }
+            this._checkMilestoneUnlocks();
+        }
         window.eventEngine.addLog(this.time.year, this.time.month, this.getTenDayStr(),
             `🎁 兑换口令码【${code}】！${gift.desc}`, 'accept');
         this.saveGame();
@@ -1911,7 +1932,8 @@ class GameEngine {
                 labName: this.labName, labStage: this.labStage, currentQuestIndex: this.currentQuestIndex,
                 funding: this.funding, prestige: this.prestige,
                 members: this.members, rosterAvailable: this.rosterAvailable,
-                unlockedLegendary: this.unlockedLegendary, stationInstances: this.stationInstances,
+                unlockedLegendary: this.unlockedLegendary, allUnlocked: this.allUnlocked || false,
+                stationInstances: this.stationInstances,
                 inventory: this.inventory, currentPaperProject: this.currentPaperProject,
                 publishedPapers: this.publishedPapers,
                 time: this.time, buffs: this.buffs,
@@ -1936,6 +1958,7 @@ class GameEngine {
             const d = JSON.parse(raw);
             if (!d) return false;
             Object.assign(this, d);
+            this.allUnlocked = d.allUnlocked || false;
             this.mentorLevel = d.mentorLevel || 1;
             this.activeClickTarget = d.activeClickTarget || 'films';
             this.achievements = d.achievements || [];
