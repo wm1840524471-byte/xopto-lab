@@ -242,6 +242,27 @@
                 <button class="btn-modal-action" onclick="window.ui.openModal('modal-log')">📜 查看纪实日志</button>
                 <button class="btn-modal-action" onclick="window.ui.openModal('modal-redeem')">🎁 输入口令码</button>
                 <button class="btn-modal-action btn-danger" onclick="if(confirm('确定重新建组？所有进度将清空！')) window.gameEngine.hardReset();">⚠️ 重新建组</button>
+
+                <!-- 游玩人数与访客统计大盘 -->
+                <div class="settings-visitor-stats" style="margin-top:14px;padding:10px 12px;background:rgba(15,23,42,0.9);border-radius:10px;border:1px solid rgba(56,189,248,0.25);text-align:center;font-size:11px;color:var(--text2)">
+                    <div style="font-weight:800;color:#38bdf8;margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:4px">
+                        <span>📊</span><span>课题组游玩人数与访问大盘</span>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">
+                        <div style="background:rgba(30,41,59,0.7);padding:6px;border-radius:6px">
+                            <div style="font-size:10px;color:#94a3b8">👀 累计科研人次 (PV)</div>
+                            <div style="font-size:14px;font-weight:900;color:#f8fafc;margin-top:2px;font-family:var(--font-mono)">
+                                <span id="busuanzi_value_site_pv">--</span> 次
+                            </div>
+                        </div>
+                        <div style="background:rgba(30,41,59,0.7);padding:6px;border-radius:6px">
+                            <div style="font-size:10px;color:#94a3b8">🧑‍🔬 独立同门访客 (UV)</div>
+                            <div style="font-size:14px;font-weight:900;color:#4ade80;margin-top:2px;font-family:var(--font-mono)">
+                                <span id="busuanzi_value_site_uv">--</span> 人
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -318,6 +339,7 @@
 </div>
 </div>
 
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 <script src="js/gameData.js"></script>
 <script src="js/character.js"></script>
 <script src="js/soundEngine.js"></script>
