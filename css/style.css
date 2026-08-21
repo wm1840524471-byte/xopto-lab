@@ -48,13 +48,16 @@ small{font-size:11px;color:var(--text2)}
 .buff-team{background:rgba(34,211,238,.15);color:var(--cyan)}
 
 /* ==================== 主线任务条 ==================== */
-.quest-bar{padding:8px 14px;background:linear-gradient(135deg,rgba(59,130,246,.1),rgba(168,85,247,.08));border-bottom:1px solid var(--border);flex-shrink:0}
-.quest-tag{font-size:10px;color:var(--blue);font-weight:700;margin-bottom:2px}
-.quest-text{font-size:12px;color:var(--text)}
+.quest-bar{padding:8px 14px;background:linear-gradient(135deg,rgba(59,130,246,.12),rgba(168,85,247,.1));border-bottom:1px solid var(--border);flex-shrink:0}
+.quest-top-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px}
+.quest-tag{font-size:11px;color:var(--blue);font-weight:800;letter-spacing:0.3px}
+.btn-quest-jump{background:linear-gradient(135deg,#0284c7,#38bdf8);color:#fff;border:none;font-size:11px;padding:3px 10px;border-radius:12px;font-weight:800;cursor:pointer;box-shadow:0 2px 8px rgba(56,189,248,0.35);animation:pulseGlow 2s infinite}
+@keyframes pulseGlow{0%{transform:scale(1);box-shadow:0 2px 8px rgba(56,189,248,0.35)}50%{transform:scale(1.05);box-shadow:0 0 14px rgba(56,189,248,0.7)}100%{transform:scale(1);box-shadow:0 2px 8px rgba(56,189,248,0.35)}}
+.quest-text{font-size:12px;color:var(--text);line-height:1.4}
 .quest-text b{color:var(--gold)}
 .quest-progress{font-size:11px;color:var(--text2);margin-top:2px}
-.quest-progress-bar{height:4px;background:var(--card2);border-radius:2px;margin-top:3px;overflow:hidden}
-.quest-progress-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--purple));border-radius:2px;transition:width .3s}
+.quest-progress-bar{height:5px;background:var(--card2);border-radius:3px;margin-top:4px;overflow:hidden;border:1px solid rgba(255,255,255,0.05)}
+.quest-progress-fill{height:100%;background:linear-gradient(90deg,#38bdf8,#a855f7,#4ade80);border-radius:3px;transition:width .3s}
 
 /* ==================== 主内容区 ==================== */
 .main-scroll{flex:1;overflow-y:auto;padding:10px 12px 80px;-webkit-overflow-scrolling:touch}
@@ -2212,6 +2215,147 @@ small{font-size:11px;color:var(--text2)}
     font-weight: 800;
 }
 
+/* ==================== 新手保姆级通关指引弹窗 ==================== */
+.modal-guide-box {
+    max-width: 480px;
+    width: 95%;
+    border: 1.5px solid rgba(56, 189, 248, 0.4);
+    box-shadow: 0 0 35px rgba(56, 189, 248, 0.25);
+    background: linear-gradient(160deg, #1e293b, #0f172a);
+}
 
+.guide-welcome-banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-bottom: 14px;
+}
 
+.gwb-icon {
+    font-size: 28px;
+}
 
+.gwb-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: #f8fafc;
+    margin-bottom: 2px;
+}
+
+.gwb-sub {
+    font-size: 11px;
+    color: var(--text2);
+}
+
+.guide-steps-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.guide-step-card {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 10px;
+    position: relative;
+    transition: transform 0.15s, border-color 0.2s;
+}
+
+.guide-step-card:hover {
+    border-color: #38bdf8;
+    transform: translateY(-2px);
+}
+
+.gsc-num {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    font-size: 12px;
+    font-weight: 900;
+    font-family: var(--font-mono);
+    color: rgba(56, 189, 248, 0.4);
+}
+
+.gsc-icon {
+    font-size: 22px;
+    margin-bottom: 4px;
+}
+
+.gsc-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: #f8fafc;
+    margin-bottom: 4px;
+}
+
+.gsc-desc {
+    font-size: 11px;
+    color: var(--text2);
+    line-height: 1.4;
+}
+
+.gsc-desc b {
+    color: #38bdf8;
+}
+
+.btn-guide-start {
+    width: 100%;
+    background: linear-gradient(135deg, #0284c7, #2563eb);
+    color: #fff;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.4);
+    transition: all 0.2s ease;
+}
+
+.btn-guide-start:hover {
+    background: linear-gradient(135deg, #0369a1, #1d4ed8);
+    transform: translateY(-1px);
+}
+
+/* 高亮聚光灯动效 */
+.newbie-spotlight {
+    position: relative;
+    animation: spotlightPulse 1.2s infinite alternate ease-in-out !important;
+    z-index: 10;
+}
+
+@keyframes spotlightPulse {
+    from {
+        box-shadow: 0 0 8px #38bdf8, 0 0 16px rgba(56, 189, 248, 0.4);
+        border-color: #38bdf8;
+    }
+    to {
+        box-shadow: 0 0 22px #38bdf8, 0 0 35px rgba(56, 189, 248, 0.8);
+        border-color: #7dd3fc;
+    }
+}
+
+/* 空状态温馨引导条 */
+.empty-guide-banner {
+    background: rgba(56, 189, 248, 0.08);
+    border: 1px dashed rgba(56, 189, 248, 0.35);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.4;
+}
+
+.empty-guide-banner b {
+    color: #38bdf8;
+}

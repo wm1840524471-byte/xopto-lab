@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.gameEngine.init();
     window.ui.init();
     if (window.soundEngine) window.soundEngine.updateSoundBtn();
+    if (window.ui.checkNewbieGuideOnStartup) window.ui.checkNewbieGuideOnStartup();
 
     let lastTime = performance.now();
     let saveAccumulator = 0;

@@ -82,19 +82,113 @@ class UIController {
         if (!q) { bar.innerHTML = `<div class="quest-tag">🏆 终极目标达成</div><div class="quest-text">已建成世界顶尖工程中心！</div>`; return; }
 
         let progress = 0, progressText = '';
-        if (q.targetType === 'inventory_precursors') { const cur = Math.floor(e.inventory.precursors || 0); progress = Math.min(100, cur / q.targetVal * 100); progressText = `${cur}/${q.targetVal}`; }
-        else if (q.targetType === 'inventory_films') { const cur = Math.floor(e.inventory.films || 0); progress = Math.min(100, cur / q.targetVal * 100); progressText = `${cur}/${q.targetVal}`; }
-        else if (q.targetType === 'papers_count') { const cur = e.publishedPapers.length; progress = Math.min(100, cur / q.targetVal * 100); progressText = `${cur}/${q.targetVal}`; }
-        else if (q.targetType === 'members_count') { const cur = e.members.length; progress = Math.min(100, cur / q.targetVal * 100); progressText = `${cur}/${q.targetVal}`; }
-        else if (q.targetType === 'stations_count') { const cur = e.stationInstances.length; progress = Math.min(100, cur / q.targetVal * 100); progressText = `${cur}/${q.targetVal}`; }
-        else if (q.targetType === 'has_advanced_eq') { const ok = e.stationInstances.some(i => i.eqId === 'xeon_server' || i.eqId === 'qe_pro_spec'); progress = ok ? 100 : 0; progressText = ok ? '已完成' : '未完成'; }
+        let jumpTab = 'stations';
+        let jumpBtnText = '👉 立即前往';
+
+        if (q.targetType === 'inventory_precursors') {
+            const cur = Math.floor(e.inventory.precursors || 0);
+            progress = Math.min(100, cur / q.targetVal * 100);
+            progressText = `${cur}/${q.targetVal}`;
+            jumpTab = 'stations';
+            jumpBtnText = cur >= q.targetVal ? '📦 出库变现' : '🎯 点击配制';
+        }
+        else if (q.targetType === 'inventory_films') {
+            const cur = Math.floor(e.inventory.films || 0);
+            progress = Math.min(100, cur / q.targetVal * 100);
+            progressText = `${cur}/${q.targetVal}`;
+            jumpTab = 'stations';
+            jumpBtnText = '🧤 旋涂制膜';
+        }
+        else if (q.targetType === 'papers_count' || q.targetType === 'has_top_paper' || q.targetType === 'grand_theory') {
+            const cur = e.publishedPapers.length;
+            progress = Math.min(100, cur / q.targetVal * 100);
+            progressText = `${cur}/${q.targetVal}`;
+            jumpTab = 'paper';
+            jumpBtnText = '📝 立项开题';
+        }
+        else if (q.targetType === 'members_count') {
+            const cur = e.members.length;
+            progress = Math.min(100, cur / q.targetVal * 100);
+            progressText = `${cur}/${q.targetVal}`;
+            jumpTab = 'hr';
+            jumpBtnText = '👥 招纳同门';
+        }
+        else if (q.targetType === 'stations_count' || q.targetType === 'has_advanced_eq') {
+            const cur = e.stationInstances.length;
+            progress = Math.min(100, cur / q.targetVal * 100);
+            progressText = `${cur}/${q.targetVal}`;
+            jumpTab = 'shop';
+            jumpBtnText = '🛒 选购仪器';
+        }
 
         bar.innerHTML = `
-            <div class="quest-tag">🎯 ${q.title}</div>
+            <div class="quest-top-row">
+                <div class="quest-tag">🎯 主线任务：${q.title}</div>
+                <button class="btn-quest-jump" onclick="window.ui.jumpToQuest('${jumpTab}', '${q.targetType}')">${jumpBtnText}</button>
+            </div>
             <div class="quest-text">${q.desc} <b>(${progressText})</b></div>
             <div class="quest-progress">奖励：${q.rewardText}</div>
             <div class="quest-progress-bar"><div class="quest-progress-fill" style="width:${progress}%"></div></div>
         `;
+    }
+
+    jumpToQuest(tab, targetType) {
+        if (window.soundEngine) window.soundEngine.playClick();
+        this.switchTab(tab);
+
+        // 高亮目标组件
+        setTimeout(() => {
+            if (tab === 'stations') {
+                const target = document.getElementById('research-click-console');
+                if (target) {
+                    target.classList.add('newbie-spotlight');
+                    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    setTimeout(() => target.classList.remove('newbie-spotlight'), 3000);
+                }
+                this.toast('👆 长按或连续点击中央实验台配制试剂！');
+            } else if (tab === 'shop') {
+                this.toast('💡 选购满足当前研究阶段的科研仪器！');
+            } else if (tab === 'hr') {
+                this.toast('💡 发布保研宣讲，面试录取同门入组！');
+            } else if (tab === 'paper') {
+                this.toast('💡 选拔作者团队并投入数据，冲击顶刊！');
+            }
+        }, 100);
+    }
+
+    openNewbieGuide() {
+        if (window.soundEngine) window.soundEngine.playClick();
+        this.openModal('modal-newbie-guide');
+    }
+
+    claimNewbieStarterPack() {
+        const e = window.gameEngine;
+        if (!localStorage.getItem('xopto_welcomed_gift')) {
+            e.funding += 0.5;
+            e.inventory.precursors = (e.inventory.precursors || 0) + 10;
+            localStorage.setItem('xopto_welcomed_gift', '1');
+            this.toast('🎉 0.5万启动经费与10份试剂已到账！请按指引开始科研！');
+            if (window.soundEngine) window.soundEngine.playRecycle();
+        }
+        this.closeModal('modal-newbie-guide');
+        this.switchTab('stations');
+        setTimeout(() => {
+            const target = document.getElementById('research-click-console');
+            if (target) {
+                target.classList.add('newbie-spotlight');
+                setTimeout(() => target.classList.remove('newbie-spotlight'), 3500);
+            }
+        }, 150);
+    }
+
+    checkNewbieGuideOnStartup() {
+        const e = window.gameEngine;
+        // 如果是全新开局（发表论文为0且设备为0）且未展示过欢迎弹窗
+        if (e.publishedPapers.length === 0 && e.stationInstances.length === 0 && !localStorage.getItem('xopto_welcomed_gift')) {
+            setTimeout(() => {
+                this.openModal('modal-newbie-guide');
+            }, 500);
+        }
     }
 
     // ==================== 切换 Tab ====================
@@ -296,7 +390,20 @@ class UIController {
         `;
 
         if (e.stationInstances.length === 0) { 
-            c.innerHTML = consoleHtml + recycleHtml + '<div class="empty-hint">还没有设备<br>前往【设备商城】购置通风橱与手套箱开启科研！</div>'; 
+            const emptyBanner = `
+                <div class="empty-guide-banner">
+                    <span style="font-size:28px">💡</span>
+                    <div>
+                        <div style="font-weight:800;font-size:13px;color:#f8fafc">当前实验室尚未添置大型科研设备</div>
+                        <div style="font-size:11px;color:var(--text2);margin-top:4px;line-height:1.5">
+                            ① 长按上方<b>【导师指导实验台】</b>配制前驱体；<br>
+                            ② 在下方<b>【样品技术转让】</b>变现第一笔科研经费；<br>
+                            ③ 点击下方按钮前往<b>【🛒 设备商城】</b>添置首台化学通风橱！
+                        </div>
+                    </div>
+                </div>
+            `;
+            c.innerHTML = consoleHtml + recycleHtml + emptyBanner; 
             return; 
         }
 
