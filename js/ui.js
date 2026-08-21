@@ -1462,6 +1462,7 @@ class UIController {
             <div class="matrix-cats-container">
                 ${catBlocksHtml}
             </div>
+        `;
     }
 
     // ==================== 本地与跨设备存档管理 ====================
