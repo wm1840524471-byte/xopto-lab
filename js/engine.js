@@ -271,7 +271,7 @@ class GameEngine {
               unlocked: this.publishedPapers.length >= 1 || this.getLabGrade() >= 1 },
             { speed: 4, label: '4x 通宵', desc: '配备超算/光谱仪或评级达C级解锁 (0.625s/天)', 
               unlocked: this.stationInstances.some(s => s.eqId === 'xeon_server' || s.eqId === 'qe_pro_spec') || this.getLabGrade() >= 3 },
-            { speed: 8, label: '8x 极速', desc: '发表1区/顶刊或迎回创世王猛解锁 (0.31s/天)', 
+            { speed: 8, label: '8x 极速', desc: '发表1区/顶刊或迎回创世汪猛解锁 (0.31s/天)', 
               unlocked: this.hasWangMeng() || this.publishedPapers.some(p => ['zone1', 'supreme'].includes(p.zoneKey)) || this.getLabGrade() >= 5 }
         ];
     }

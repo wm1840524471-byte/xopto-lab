@@ -285,7 +285,7 @@ const GAME_DATA = {
             mechanicDesc: '稳产主力。消耗前驱液旋涂成高质量致密薄膜，供表征与器件使用！',
             maxLevel: 5,
             upgradeBaseCost: 3.0,
-            desc: '水氧低于 0.1 ppm，林帅领招牌工位，产出高质量致密钙钛矿薄膜。'
+            desc: '水氧低于 0.1 ppm，林率领招牌工位，产出高质量致密钙钛矿薄膜。'
         },
         {
             id: 'xrd_diffractometer',
@@ -318,7 +318,7 @@ const GAME_DATA = {
             recipeDesc: '🧤 钙钛矿薄膜×1 ➔ ☀️ UV-Vis吸收谱×1',
             baseYield: 1.0,
             mechanic: 'absorption',
-            mechanicDesc: '光学带隙表征。取样薄膜测定吸收边与 Tauc Plot，宋柯欣招牌工位。',
+            mechanicDesc: '光学带隙表征。取样薄膜测定吸收边与 Tauc Plot，宋科新招牌工位。',
             maxLevel: 5,
             upgradeBaseCost: 10.0,
             desc: '双光束全波段吸收光谱系统，测定半导体光学带隙与能级跃迁。'
@@ -339,7 +339,7 @@ const GAME_DATA = {
             mechanicDesc: '可切换模式。日盲模式产紫外数据；可见光模式兼产薄膜。',
             maxLevel: 5,
             upgradeBaseCost: 18.0,
-            desc: '深紫外 DUV 光源与皮安计测试系统，张世鹏招牌工位。'
+            desc: '深紫外 DUV 光源与皮安计测试系统，章仕鹏招牌工位。'
         },
         {
             id: 'qe_pro_spec',
@@ -357,7 +357,7 @@ const GAME_DATA = {
             mechanicDesc: '速度与质量权衡。低温档：产出稳但论文分高；高温档：快速产出。',
             maxLevel: 5,
             upgradeBaseCost: 25.0,
-            desc: '变温原位 PL 稳态/瞬态动力学测试台，张梦瑶招牌工位。'
+            desc: '变温原位 PL 稳态/瞬态动力学测试台，章梦遥招牌工位。'
         },
         {
             id: 'xeon_server',
@@ -375,7 +375,7 @@ const GAME_DATA = {
             mechanicDesc: '产出理论算力，可「注入」在写论文直接缩短撰写 DDL。',
             maxLevel: 5,
             upgradeBaseCost: 40.0,
-            desc: '32核/64线程 · VASP/Gaussian 建模集群，姬心震招牌工位。'
+            desc: '32核/64线程 · VASP/Gaussian 建模集群，姬欣振招牌工位。'
         },
         {
             id: 'thermal_evap',
@@ -585,7 +585,7 @@ const GAME_DATA = {
             basePrestige: 18,
             reqData: { precursors: 20, films: 18, absData: 10 },
             journalNames: { 4: '物理学报', 3: 'J. Phys. Chem. Lett.', 2: 'Opt. Lett.', 1: 'Nano Energy', supreme: 'Nat. Commun.' },
-            desc: '测定双光束全波段吸收边与 Tauc Plot，宋柯欣招牌工位带隙表征大作。'
+            desc: '测定双光束全波段吸收边与 Tauc Plot，宋科新招牌工位带隙表征大作。'
         },
         {
             id: 'uv_blind_paper',
@@ -596,7 +596,7 @@ const GAME_DATA = {
             basePrestige: 25,
             reqData: { precursors: 25, films: 20, absData: 12, uvData: 10 },
             journalNames: { 4: 'Mater. Lett.', 3: 'IEEE Electron Dev. Lett.', 2: 'ACS Photonics', 1: 'Light: Sci. Appl.', supreme: 'Nature Photonics' },
-            desc: '吸收带隙调控与微秒级日盲探测响应，张世鹏招牌工位代表作。'
+            desc: '吸收带隙调控与微秒级日盲探测响应，章仕鹏招牌工位代表作。'
         },
         {
             id: 'pl_dynamics_paper',
@@ -607,7 +607,7 @@ const GAME_DATA = {
             basePrestige: 32,
             reqData: { precursors: 25, films: 20, spectra: 12, xrdData: 10 },
             journalNames: { 4: 'Spectrochim. Acta A', 3: 'J. Mater. Chem. C', 2: 'Laser Photonics Rev.', 1: 'ACS Nano', supreme: 'Chem' },
-            desc: '变温原位瞬态 PL 光谱与动力学分析，张梦瑶招牌工位硬核论文。'
+            desc: '变温原位瞬态 PL 光谱与动力学分析，章梦遥招牌工位硬核论文。'
         },
         {
             id: 'peled_green_paper',
@@ -629,7 +629,7 @@ const GAME_DATA = {
             basePrestige: 55,
             reqData: { precursors: 35, xrdData: 18, spectra: 18, compute: 15 },
             journalNames: { 4: 'J. Phys. Chem. C', 3: 'Chem. Sci.', 2: 'Chem. Mater.', 1: 'JACS', supreme: 'Nature' },
-            desc: '超算集群 DFT 理论建模与原位变温 PL 完美印证，姬心震与张梦瑶联袂攻坚！'
+            desc: '超算集群 DFT 理论建模与原位变温 PL 完美印证，姬欣振与章梦遥联袂攻坚！'
         },
         {
             id: 'xray_scintillator_paper',
