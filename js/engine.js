@@ -1994,18 +1994,154 @@ class GameEngine {
         this.rosterAvailable = GAME_DATA.labRosterPool.filter(n => !recruitedNames.includes(n));
     }
 
-    // ==================== 跨域/跨设备导出与导入存档码 / 文件 ====================
+    // ==================== 跨域/跨设备导出与导入超紧凑存档码 / 文件 ====================
+    _serializeUltraSlimSave() {
+        const inv = {};
+        for (let [k, v] of Object.entries(this.inventory || {})) {
+            if (v && v > 0) inv[k] = Math.round(v * 10) / 10;
+        }
+
+        const members = (this.members || []).map(m => {
+            const arr = [m.id, m.name, m.gradeYear || 1, m.assignedStationId || ''];
+            const hasApt = m.aptRanks && Object.values(m.aptRanks).some(r => r !== 'D');
+            const hasExp = m.aptExp && Object.values(m.aptExp).some(e => e > 0);
+            if (hasApt || hasExp) {
+                arr.push(m.aptRanks);
+                arr.push(m.aptExp);
+            }
+            return arr;
+        });
+
+        const stations = (this.stationInstances || []).map(s => [
+            s.instanceId, s.eqId, s.level, s.operatorId || '', s.switchMode || '', s.tradeoffMode || ''
+        ]);
+
+        const papers = (this.publishedPapers || []).map(p => [
+            p.title, p.zoneKey, p.journal, p.score, p.leadName, p.year, p.month
+        ]);
+
+        return {
+            v: 2,
+            n: this.labName === 'X-Opto 课题组' ? undefined : this.labName,
+            s: this.labStage,
+            q: this.currentQuestIndex,
+            f: Math.round((this.funding || 0) * 100) / 100,
+            p: this.prestige || 0,
+            m: members,
+            st: stations.length > 0 ? stations : undefined,
+            inv: Object.keys(inv).length > 0 ? inv : undefined,
+            pp: papers.length > 0 ? papers : undefined,
+            t: [this.time.year, this.time.month, this.time.day, this.time.speed || 1],
+            u: (this.unlockedLegendary || []).length > 0 ? this.unlockedLegendary : undefined,
+            all: this.allUnlocked ? 1 : undefined,
+            ml: this.mentorLevel || 1,
+            at: this.activeClickTarget || 'films',
+            ach: (this.achievements || []).length > 0 ? this.achievements : undefined,
+            lp: this.lessonPoints || undefined,
+            rb: this.reviewBonus || undefined,
+            ia: this.instantAcceptReady ? 1 : undefined
+        };
+    }
+
+    _deserializeUltraSlimSave(obj) {
+        if (!obj || typeof obj !== 'object') return false;
+        this.labName = obj.n || 'X-Opto 课题组';
+        this.labStage = obj.s || 1;
+        this.currentQuestIndex = obj.q !== undefined ? obj.q : 0;
+        this.funding = obj.f || 0;
+        this.prestige = obj.p || 0;
+        this.allUnlocked = !!obj.all;
+        this.unlockedLegendary = obj.u || [];
+        this.mentorLevel = obj.ml || 1;
+        this.activeClickTarget = obj.at || 'films';
+        this.achievements = obj.ach || [];
+        this.lessonPoints = obj.lp || 0;
+        this.reviewBonus = obj.rb || 0;
+        this.instantAcceptReady = !!obj.ia;
+
+        if (obj.t && Array.isArray(obj.t)) {
+            this.time = { year: obj.t[0] || 1, month: obj.t[1] || 9, day: obj.t[2] || 1, speed: obj.t[3] || 1 };
+        }
+
+        // Inventory
+        this.inventory = { precursors: 0, films: 0, xrdData: 0, absData: 0, uvData: 0, spectra: 0, compute: 0, devices: 0, imaging: 0, coffee: 0 };
+        if (obj.inv) {
+            Object.assign(this.inventory, obj.inv);
+        }
+
+        // Members
+        const cm = window.characterManager;
+        this.members = (obj.m || []).map(item => {
+            let id, name, gradeYear, assignedStationId, aptRanks, aptExp;
+            if (Array.isArray(item)) {
+                [id, name, gradeYear, assignedStationId, aptRanks, aptExp] = item;
+            } else {
+                id = item.id; name = item.name; gradeYear = item.gradeYear; assignedStationId = item.assignedStationId;
+                aptRanks = item.aptRanks; aptExp = item.aptExp;
+            }
+            let mem;
+            if (id === 'starter_rookie') {
+                mem = cm ? cm.createStarter() : { id, name, avatar: '🧑‍🎓', tier: 'Normal' };
+            } else {
+                const leg = (GAME_DATA.legendaryMembers || []).find(l => l.id === id);
+                if (leg) {
+                    mem = cm ? cm.createLegendaryMember(leg) : { id, name, avatar: leg.avatar, tier: leg.tier };
+                } else {
+                    mem = cm ? cm.createRosterMember(name) : { id, name, avatar: '🧑‍🎓', tier: 'Normal' };
+                }
+            }
+            if (!mem) mem = { id, name, avatar: '🧑‍🎓', tier: 'Normal' };
+            mem.id = id;
+            mem.name = name;
+            if (gradeYear) mem.gradeYear = gradeYear;
+            if (assignedStationId) mem.assignedStationId = assignedStationId;
+            if (aptRanks) mem.aptRanks = aptRanks;
+            if (aptExp) mem.aptExp = aptExp;
+            if (cm) cm.ensureMemberApt(mem);
+            return mem;
+        });
+
+        // Stations
+        this.stationInstances = (obj.st || []).map(item => {
+            if (Array.isArray(item)) {
+                return {
+                    instanceId: item[0], eqId: item[1], level: item[2] || 1,
+                    operatorId: item[3] || null, switchMode: item[4] || null, tradeoffMode: item[5] || null,
+                    batchCountdown: 0, rampupStreak: 0, brokenUntilDay: 0
+                };
+            }
+            return item;
+        });
+
+        // Papers
+        this.publishedPapers = (obj.pp || []).map(item => {
+            if (Array.isArray(item)) {
+                return {
+                    id: 'paper_' + Math.random(),
+                    title: item[0], zoneKey: item[1], journal: item[2], score: item[3],
+                    leadName: item[4], year: item[5], month: item[6]
+                };
+            }
+            return item;
+        });
+
+        this._migrateRosterNames();
+        this.saveGame();
+        return true;
+    }
+
     exportSaveCode() {
         this.saveGame();
         try {
-            const raw = localStorage.getItem(this.saveKey) || '{}';
+            const slim = this._serializeUltraSlimSave();
+            const raw = JSON.stringify(slim);
             const utf8Bytes = new TextEncoder().encode(raw);
             let binary = '';
             for (let b of utf8Bytes) binary += String.fromCharCode(b);
             const b64 = btoa(binary);
-            return 'XOPTO_' + b64;
+            return 'XO_' + b64;
         } catch (e) {
-            console.error('导出存档码失败', e);
+            console.error('导出超紧凑存档码失败', e);
             return '';
         }
     }
@@ -2013,7 +2149,9 @@ class GameEngine {
     importSaveCode(codeStr) {
         if (!codeStr || typeof codeStr !== 'string') return { error: '请输入有效的存档码！' };
         let clean = codeStr.trim();
-        if (clean.startsWith('XOPTO_')) clean = clean.slice(6);
+        if (clean.startsWith('XO_')) clean = clean.slice(3);
+        else if (clean.startsWith('XOPTO_')) clean = clean.slice(6);
+
         try {
             let jsonStr = '';
             if (clean.startsWith('{')) {
@@ -2025,16 +2163,26 @@ class GameEngine {
                 jsonStr = new TextDecoder().decode(bytes);
             }
             const data = JSON.parse(jsonStr);
-            if (!data || typeof data !== 'object' || !data.labStage) {
-                return { error: '存档码数据已损坏或格式不正确！' };
+            if (!data || typeof data !== 'object') {
+                return { error: '存档码数据已损坏！' };
             }
-            localStorage.setItem(this.saveKey, JSON.stringify(data));
-            this.loadGame();
-            if (window.ui) {
-                window.ui.renderAll();
-                window.ui.toast('🎉 成功载入科研进度！');
+
+            if (data.v === 2) {
+                // Ultra-slim format
+                this._deserializeUltraSlimSave(data);
+            } else {
+                // Legacy verbose format
+                localStorage.setItem(this.saveKey, JSON.stringify(data));
+                this.loadGame();
             }
-            return { success: true, labName: data.labName || '课题组' };
+
+            try {
+                if (window.ui) {
+                    window.ui.renderAll();
+                    window.ui.toast('🎉 成功载入科研进度！');
+                }
+            } catch (uiErr) { console.warn('UI刷新提醒', uiErr); }
+            return { success: true, labName: this.labName || '课题组' };
         } catch (e) {
             console.error('导入存档失败', e);
             return { error: '解析存档码失败，请检查是否完整复制！' };
