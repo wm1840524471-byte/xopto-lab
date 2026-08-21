@@ -1031,12 +1031,14 @@ const GAME_DATA = {
             SSR: 10.00,
             SSSSSR: 25.00
         },
-        comboDecayTime: 2.0, // 停止点击 2 秒后连击开始衰减
+        comboDecayTime: 3.0, // 停止点击 3 秒后连击才开始衰减
         comboStages: [
-            { threshold: 50, mult: 3.0, critBonus: 0.30, name: '👑 灵感爆发 MAX', color: '#ffd700', badgeClass: 'combo-max' },
-            { threshold: 25, mult: 2.0, critBonus: 0.15, name: '⚡ 通宵攻坚', color: '#00e5ff', badgeClass: 'combo-high' },
-            { threshold: 10, mult: 1.5, critBonus: 0.05, name: '🔥 专注科研', color: '#ff7043', badgeClass: 'combo-mid' },
-            { threshold: 0,  mult: 1.0, critBonus: 0.00, name: '常规科研', color: '#94a3b8', badgeClass: 'combo-normal' }
+            { threshold: 500, mult: 6.0, critBonus: 0.50, name: '🌌 天人合一 · 神级共鸣', color: '#ff1493', badgeClass: 'combo-divine' },
+            { threshold: 250, mult: 4.5, critBonus: 0.40, name: '💎 灵感井喷 · 世纪极速', color: '#a855f7', badgeClass: 'combo-cosmic' },
+            { threshold: 100, mult: 3.5, critBonus: 0.30, name: '👑 宗师通宵 · 爆发 MAX', color: '#ffd700', badgeClass: 'combo-max' },
+            { threshold: 50,  mult: 2.5, critBonus: 0.20, name: '⚡ 通宵攻坚', color: '#00e5ff', badgeClass: 'combo-high' },
+            { threshold: 20,  mult: 1.8, critBonus: 0.10, name: '🔥 专注科研', color: '#ff7043', badgeClass: 'combo-mid' },
+            { threshold: 0,   mult: 1.0, critBonus: 0.00, name: '常规科研', color: '#94a3b8', badgeClass: 'combo-normal' }
         ],
         mentorUpgrades: [
             { level: 1, name: '基础实验示教', desc: '手把手教移液与称量规范', cost: 0, baseSuccess: 1.00, failLuck: 0.00, powerMult: 1.0, critBonus: 0.00, paperBoostMult: 1.0, expChance: 0.15 },

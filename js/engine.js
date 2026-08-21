@@ -1501,18 +1501,18 @@ class GameEngine {
             this.inventory.precursors = (this.inventory.precursors || 0) + (mPower * mCPS * deltaSec);
         }
 
-        // 3. 全组操作员自动连点维持与积累连击槽 (保持全组处于科研心流状态)
+        // 3. 全组操作员自动连点维持与积累连击槽 (上不封顶，保持全组处于科研心流状态)
         if (totalLabCPS > 0) {
-            this.combo = Math.min(50, (this.combo || 0) + (totalLabCPS * deltaSec * 0.12));
+            this.combo = (this.combo || 0) + (totalLabCPS * deltaSec * 0.25);
+            const intCombo = Math.floor(this.combo);
+            if (intCombo > (this.maxCombo || 0)) this.maxCombo = intCombo;
             this.comboTimer = GAME_DATA.clickConfig.comboDecayTime;
         } else {
-            // 连击计时衰减
+            // 连击计时衰减（完全停止 3 秒后平滑递减）
             if (this.comboTimer > 0) {
                 this.comboTimer -= deltaSec;
-                if (this.comboTimer <= 0 && this.combo > 0) {
-                    this.combo = Math.max(0, Math.floor(this.combo * 0.7) - 1);
-                    if (this.combo > 0) this.comboTimer = 0.4;
-                }
+            } else if (this.combo > 0) {
+                this.combo = Math.max(0, this.combo - deltaSec * 6);
             }
         }
 

@@ -61,6 +61,53 @@ small{font-size:11px;color:var(--text2)}
 .quest-progress-bar{height:5px;background:var(--card2);border-radius:3px;margin-top:4px;overflow:hidden;border:1px solid rgba(255,255,255,0.05)}
 .quest-progress-fill{height:100%;background:linear-gradient(90deg,#38bdf8,#a855f7,#4ade80);border-radius:3px;transition:width .3s}
 
+/* 萌新下一步行动罗盘 */
+.newbie-compass-banner {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+    padding: 6px 10px;
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(245, 158, 11, 0.08));
+    border: 1px solid rgba(251, 191, 36, 0.35);
+    border-radius: 8px;
+    font-size: 11px;
+    color: #fef08a;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    animation: compassPulse 2.5s infinite;
+}
+
+.newbie-compass-banner:hover {
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.25), rgba(245, 158, 11, 0.15));
+    border-color: #fbbf24;
+}
+
+.newbie-compass-banner b {
+    color: #fff;
+}
+
+.newbie-compass-banner .ncb-icon {
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.newbie-compass-banner .ncb-text {
+    flex: 1;
+    line-height: 1.35;
+}
+
+.newbie-compass-banner .ncb-arrow {
+    font-weight: 800;
+    color: #fbbf24;
+    flex-shrink: 0;
+}
+
+@keyframes compassPulse {
+    0%, 100% { box-shadow: 0 0 0 rgba(251, 191, 36, 0); }
+    50% { box-shadow: 0 0 12px rgba(251, 191, 36, 0.35); }
+}
+
 /* ==================== 主内容区 ==================== */
 .main-scroll{flex:1;overflow-y:auto;padding:10px 12px calc(90px + env(safe-area-inset-bottom, 25px));-webkit-overflow-scrolling:touch}
 .main-scroll::-webkit-scrollbar{width:3px}

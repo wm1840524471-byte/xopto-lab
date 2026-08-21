@@ -238,10 +238,10 @@
                 <button class="btn-close" onclick="window.ui.closeModal('modal-settings')">✖</button>
             </div>
             <div class="modal-body">
-                <button class="btn-modal-action" onclick="window.ui.openSaveModal();">💾 本地与跨设备存读档</button>
-                <button class="btn-modal-action" onclick="window.ui.openModal('modal-log')">📜 查看纪实日志</button>
-                <button class="btn-modal-action" onclick="window.ui.openModal('modal-redeem')">🎁 输入口令码</button>
-                <button class="btn-modal-action btn-danger" onclick="if(confirm('确定重新建组？所有进度将清空！')) window.gameEngine.hardReset();">⚠️ 重新建组</button>
+                <button class="btn-modal-action" onclick="window.ui.closeModal('modal-settings'); window.ui.openSaveModal();">💾 本地与跨设备存读档</button>
+                <button class="btn-modal-action" onclick="window.ui.closeModal('modal-settings'); window.ui.openModal('modal-log');">📜 查看纪实日志</button>
+                <button class="btn-modal-action" onclick="window.ui.closeModal('modal-settings'); window.ui.openModal('modal-redeem');">🎁 输入口令码</button>
+                <button class="btn-modal-action btn-danger" onclick="if(confirm('确定重新建组？所有进度将清空！')) { window.ui.closeModal('modal-settings'); window.gameEngine.hardReset(); }">⚠️ 重新建组</button>
 
                 <!-- 游玩人数与访客统计大盘 -->
                 <div class="settings-visitor-stats" style="margin-top:14px;padding:10px 12px;background:rgba(15,23,42,0.9);border-radius:10px;border:1px solid rgba(56,189,248,0.25);text-align:center;font-size:11px;color:var(--text2)">

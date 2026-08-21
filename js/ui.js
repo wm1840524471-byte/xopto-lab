@@ -121,6 +121,31 @@ class UIController {
             jumpBtnText = '🛒 选购仪器';
         }
 
+        // 萌新下一步行动罗盘指南
+        let nextActionTip = '';
+        if (e.currentQuestIndex === 0) {
+            const curPrec = Math.floor(e.inventory.precursors || 0);
+            if (curPrec < 10) {
+                nextActionTip = `👉 <b>【第1步·配制溶液】</b> 长按或连续点击下方【导师指导实验台】配制 10 份前驱体溶液（当前 ${curPrec}/10）`;
+            } else {
+                nextActionTip = `👉 <b>【第2步·样品转让】</b> 试剂充足！点击下方【样品技术转让】一键全品类清仓变现第一桶金！`;
+            }
+        } else if (e.currentQuestIndex === 1) {
+            nextActionTip = `👉 <b>【第3步·购置设备】</b> 前往<b>【🛒 商城】</b>添置首台【化学通风橱】，开启自动化原料制备！`;
+        } else if (e.currentQuestIndex === 2) {
+            nextActionTip = `👉 <b>【第4步·立项发表】</b> 原料齐备！前往<b>【📝 立项】</b>指派作者发表首篇 4 区 SCI 论文，解锁 2 倍速并获取国家科研基金！`;
+        } else if (e.currentQuestIndex === 3) {
+            nextActionTip = `👉 <b>【第5步·招贤纳士】</b> 前往<b>【👥 人事】</b>发布招生简章招录新弟子，并指派进驻设备自动连点！`;
+        }
+
+        const compassHtml = nextActionTip ? `
+            <div class="newbie-compass-banner" onclick="window.ui.jumpToQuest('${jumpTab}', '${q.targetType}')" title="点击直接前往目标位置">
+                <span class="ncb-icon">🧭</span>
+                <span class="ncb-text">${nextActionTip}</span>
+                <span class="ncb-arrow">➔</span>
+            </div>
+        ` : '';
+
         bar.innerHTML = `
             <div class="quest-top-row">
                 <div class="quest-tag">🎯 主线任务：${q.title}</div>
@@ -129,31 +154,59 @@ class UIController {
             <div class="quest-text">${q.desc} <b>(${progressText})</b></div>
             <div class="quest-progress">奖励：${q.rewardText}</div>
             <div class="quest-progress-bar"><div class="quest-progress-fill" style="width:${progress}%"></div></div>
+            ${compassHtml}
         `;
     }
 
     jumpToQuest(tab, targetType) {
         if (window.soundEngine) window.soundEngine.playClick();
+        const e = window.gameEngine;
         this.switchTab(tab);
 
-        // 高亮目标组件
+        // 智能高亮目标组件
         setTimeout(() => {
             if (tab === 'stations') {
-                const target = document.getElementById('research-click-console');
+                const curPrec = Math.floor(e.inventory.precursors || 0);
+                if (curPrec < 10) {
+                    const target = document.getElementById('research-click-console');
+                    if (target) {
+                        target.classList.add('newbie-spotlight');
+                        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        setTimeout(() => target.classList.remove('newbie-spotlight'), 3500);
+                    }
+                    this.toast('👆 长按或连续点击中央实验台配制试剂！');
+                } else {
+                    const target = document.getElementById('recycle-panel-container');
+                    if (target) {
+                        target.classList.add('newbie-spotlight');
+                        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        setTimeout(() => target.classList.remove('newbie-spotlight'), 3500);
+                    }
+                    this.toast('💵 点击【一键全品类清仓转让】出库变现！');
+                }
+            } else if (tab === 'shop') {
+                const target = document.getElementById('shop-container');
                 if (target) {
                     target.classList.add('newbie-spotlight');
-                    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    setTimeout(() => target.classList.remove('newbie-spotlight'), 3000);
+                    setTimeout(() => target.classList.remove('newbie-spotlight'), 3500);
                 }
-                this.toast('👆 长按或连续点击中央实验台配制试剂！');
-            } else if (tab === 'shop') {
-                this.toast('💡 选购满足当前研究阶段的科研仪器！');
+                this.toast('🛒 选购首台【化学通风橱】或尖端科研设备！');
             } else if (tab === 'hr') {
-                this.toast('💡 发布保研宣讲，面试录取同门入组！');
+                const target = document.getElementById('hr-container');
+                if (target) {
+                    target.classList.add('newbie-spotlight');
+                    setTimeout(() => target.classList.remove('newbie-spotlight'), 3500);
+                }
+                this.toast('👥 发布招生宣讲，面试录取同门入组！');
             } else if (tab === 'paper') {
-                this.toast('💡 选拔作者团队并投入数据，冲击顶刊！');
+                const target = document.getElementById('paper-container');
+                if (target) {
+                    target.classList.add('newbie-spotlight');
+                    setTimeout(() => target.classList.remove('newbie-spotlight'), 3500);
+                }
+                this.toast('📝 选拔作者团队并投入数据，冲击顶刊！');
             }
-        }, 100);
+        }, 120);
     }
 
     openNewbieGuide() {
@@ -165,13 +218,15 @@ class UIController {
         const e = window.gameEngine;
         if (!localStorage.getItem('xopto_welcomed_gift')) {
             e.funding += 0.5;
-            e.inventory.precursors = (e.inventory.precursors || 0) + 10;
+            e.inventory.precursors = (e.inventory.precursors || 0) + 15;
+            e.inventory.coffee = (e.inventory.coffee || 0) + 5;
             localStorage.setItem('xopto_welcomed_gift', '1');
-            this.toast('🎉 0.5万启动经费与10份试剂已到账！请按指引开始科研！');
+            this.toast('🎉 0.5万启动经费、15份试剂与5份咖啡已到账！请按罗盘指引开始科研！');
             if (window.soundEngine) window.soundEngine.playRecycle();
         }
         this.closeModal('modal-newbie-guide');
         this.switchTab('stations');
+        this.renderQuestBar();
         setTimeout(() => {
             const target = document.getElementById('research-click-console');
             if (target) {
@@ -1245,7 +1300,16 @@ class UIController {
     }
 
     // ==================== 弹窗管理 ====================
-    openModal(id) { const el = document.getElementById(id); if (el) { el.style.display = 'flex'; if (id === 'modal-log') this.renderChronicle(); } }
+    openModal(id) {
+        if (id !== 'modal-settings') {
+            this.closeModal('modal-settings');
+        }
+        const el = document.getElementById(id);
+        if (el) {
+            el.style.display = 'flex';
+            if (id === 'modal-log') this.renderChronicle();
+        }
+    }
     closeModal(id) { const el = document.getElementById(id); if (el) el.style.display = 'none'; }
 
     // ==================== 操作员选择与指派 ====================
@@ -2417,15 +2481,22 @@ class UIController {
             autoBadgeEl.innerHTML = `🤖 操作员自动连点: <b>${autoCPS.toFixed(1)}</b>次/秒 (+${autoPower.toFixed(2)}/s)`;
         }
 
+        const stages = GAME_DATA.clickConfig.comboStages || [];
+        const nextStage = [...stages].reverse().find(s => s.threshold > combo);
+        const currentThreshold = comboStage.threshold || 0;
+        const nextThreshold = nextStage ? nextStage.threshold : (comboStage.threshold * 2 || 100);
+        const progressInTier = Math.min(100, Math.max(0, ((combo - currentThreshold) / (nextThreshold - currentThreshold)) * 100));
+
         const countEl = document.getElementById('click-combo-count');
         if (countEl) {
-            countEl.innerHTML = `🔥 连击 <b>x${Math.floor(combo)}</b> (${comboStage.mult.toFixed(1)}x)`;
+            countEl.innerHTML = `🔥 连击 <b>x${Math.floor(combo)}</b> (${comboStage.mult.toFixed(1)}x)${nextStage ? ` <small style="font-size:10px;opacity:0.85">➔ 距下阶段需${Math.ceil(nextStage.threshold - combo)}击</small>` : ' 👑 极致巅峰'}`;
         }
 
         const fillEl = document.getElementById('click-combo-bar-fill');
         if (fillEl) {
-            fillEl.style.width = `${Math.min(100, (combo / 50) * 100)}%`;
+            fillEl.style.width = `${nextStage ? progressInTier : 100}%`;
             fillEl.style.backgroundColor = comboStage.color;
+            fillEl.style.boxShadow = `0 0 10px ${comboStage.color}`;
         }
 
         // 连击光效类
