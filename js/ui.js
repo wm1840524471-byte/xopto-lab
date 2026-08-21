@@ -482,7 +482,10 @@ class UIController {
                             <span class="live-dot"></span>
                             <span class="live-text">${liveText}</span>
                         </div>
-                        <div class="station-level-pill">Lv.${inst.level} <small>/${eq.maxLevel}</small></div>
+                        <div class="station-top-right-group">
+                            <div class="station-level-pill">Lv.${inst.level} <small>/${eq.maxLevel}</small></div>
+                            <button class="btn-station-sell" onclick="event.stopPropagation(); window.ui.sellStationPrompt('${inst.instanceId}')" title="二手设备处置转让（退还80%经费）">♻️ 转让</button>
+                        </div>
                     </div>
 
                     <!-- 主展示区：大图标 + 名称 + 产出值 (支持直接点击指导) -->
@@ -1276,6 +1279,37 @@ class UIController {
             this.toast(`⚠️ 硬件调试未达标！攻关未果，获得 +${Math.round(r.luckAdded * 100)}% 调试保底！下次成功率升至 ${Math.round(r.nextChance * 100)}%！`);
             this.renderStations();
             this.renderTopBar();
+        }
+    }
+
+    // ==================== 二手设备处置转让 ====================
+    sellStationPrompt(instanceId) {
+        const e = window.gameEngine;
+        const inst = e.stationInstances.find(s => s.instanceId === instanceId);
+        if (!inst) return;
+        const eq = GAME_DATA.equipmentList.find(x => x.id === inst.eqId);
+        if (!eq) return;
+
+        let totalInvested = eq.price;
+        if (inst.level > 1 && eq.upgradeBaseCost) {
+            for (let lvl = 1; lvl < inst.level; lvl++) {
+                totalInvested += eq.upgradeBaseCost * lvl;
+            }
+        }
+        const refund = Math.round(totalInvested * 0.8 * 100) / 100;
+
+        if (confirm(`确定要转让处置【${eq.name}】(Lv.${inst.level}) 吗？\n\n💰 将折旧回收并退还 +${refund} 万元科研经费！`)) {
+            const r = e.sellStation(instanceId);
+            if (r.error) {
+                this.toast(r.error);
+            } else if (r.success) {
+                if (window.soundEngine) window.soundEngine.playRecycle();
+                this.toast(`♻️ 已成功处置【${r.eqName}】，回笼科研经费 +${r.refund} 万元！`);
+                this.renderStations();
+                this.renderTopBar();
+                this.renderResourcePanel();
+                this.renderQuestBar();
+            }
         }
     }
 

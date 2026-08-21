@@ -130,6 +130,31 @@ small{font-size:11px;color:var(--text2)}
     background: linear-gradient(145deg, #1e2430, #141724);
 }
 
+.station-top-right-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-station-sell {
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    color: #f87171;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: all 0.15s ease;
+}
+
+.btn-station-sell:hover {
+    background: rgba(239, 68, 68, 0.25);
+    border-color: #ef4444;
+    color: #fca5a5;
+    transform: scale(1.05);
+}
+
 /* 上下游工艺配方胶囊 */
 .station-recipe-pill {
     display: flex;

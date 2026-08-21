@@ -616,7 +616,40 @@ class GameEngine {
         return { success: true };
     }
 
-    // ==================== 指派操作员 ====================
+    // ==================== 二手设备处置/转让折现 ====================
+    sellStation(instanceId) {
+        const idx = this.stationInstances.findIndex(s => s.instanceId === instanceId);
+        if (idx === -1) return { error: '未找到该设备！' };
+        const inst = this.stationInstances[idx];
+        const eq = GAME_DATA.equipmentList.find(e => e.id === inst.eqId);
+        if (!eq) return { error: '设备数据异常！' };
+
+        // 计算折旧退款金额 (原价80% + 历史升级投入80%)
+        let totalInvested = eq.price;
+        if (inst.level > 1 && eq.upgradeBaseCost) {
+            for (let lvl = 1; lvl < inst.level; lvl++) {
+                totalInvested += eq.upgradeBaseCost * lvl;
+            }
+        }
+        const refund = Math.round(totalInvested * 0.8 * 100) / 100;
+
+        // 释放可能在岗的操作员
+        if (inst.operatorId) {
+            const oldOp = this.members.find(m => m.id === inst.operatorId);
+            if (oldOp) oldOp.assignedStationId = null;
+        }
+
+        // 移除设备实例
+        this.stationInstances.splice(idx, 1);
+        this.funding += refund;
+
+        window.eventEngine.addLog(this.time.year, this.time.month, this.getTenDayStr(),
+            `♻️ 二手处置【${eq.name}】(Lv.${inst.level})，折旧回笼科研经费 +${refund} 万元！`, 'normal');
+
+        this._checkQuestProgress();
+        this.saveGame();
+        return { success: true, refund, eqName: eq.name, level: inst.level };
+    }
     assignOperator(instanceId, memberId) {
         const inst = this.stationInstances.find(s => s.instanceId === instanceId);
         if (!inst) return;
